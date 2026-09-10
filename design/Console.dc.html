@@ -1,0 +1,695 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #1A18F0; text-decoration: none; }
+    a:hover { color: #1210B8; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; display: flex; background: #F5F5F2; color: #17171A; overflow: hidden;">
+
+  <div style="width: 224px; flex-shrink: 0; background: #17171A; display: flex; flex-direction: column; padding: 24px 16px;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px; margin-bottom: 36px;">
+      <img src="gina-mark-white.webp" alt="" style="width: 22px; height: 22px; display: block;">
+      <div style="font-family: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #FFFFFF; text-transform: uppercase;">Gina&#39;s Dispatch</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <div style="{{navLiveStyle}}" onClick="{{selectLive}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M2 8.5A1.5 1.5 0 0 1 3.5 7h9A1.5 1.5 0 0 1 14 8.5V16H2V8.5Z" stroke="{{navLiveIconColor}}" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M14 10.5h3.6l3.4 3.6V16h-7v-5.5Z" stroke="{{navLiveIconColor}}" stroke-width="1.7" stroke-linejoin="round"/>
+          <circle cx="6" cy="16.5" r="2" stroke="{{navLiveIconColor}}" stroke-width="1.7"/>
+          <circle cx="17" cy="16.5" r="2" stroke="{{navLiveIconColor}}" stroke-width="1.7"/>
+        </svg>
+        <span>Live map</span>
+      </div>
+      <div style="{{navChildrenStyle}}" onClick="{{selectChildren}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.5" stroke="{{navChildrenIconColor}}" stroke-width="1.8"/>
+          <path d="M5 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5" stroke="{{navChildrenIconColor}}" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span>Children</span>
+      </div>
+      <div style="{{navRoutesStyle}}" onClick="{{selectRoutes}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" stroke="{{navRoutesIconColor}}" stroke-width="1.9" stroke-linejoin="round"/>
+          <circle cx="12" cy="10" r="2.4" stroke="{{navRoutesIconColor}}" stroke-width="1.9"/>
+        </svg>
+        <span>Routes &amp; zones</span>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1;"></div>
+
+    <div style="border-top: 1px solid #2B2B30; padding-top: 16px; display: flex; flex-direction: column; gap: 14px;">
+      <div style="display: flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px; background: #232327; width: fit-content;">
+        <span style="width: 7px; height: 7px; border-radius: 999px; background: #4ADE80; display: block;"></span>
+        <span style="font-size: 12px; color: #E5E5E8; font-weight: 500;">Tracker online</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px; padding: 0 8px;">
+        <span style="width: 30px; height: 30px; border-radius: 999px; background: #1A18F0; color: #FFFFFF; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">MR</span>
+        <span style="font-size: 13px; color: #FFFFFF; font-weight: 500;">Maria R.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; min-width: 0; min-height: 0; padding: 20px; display: flex; flex-direction: column; overflow: hidden;">
+
+    <sc-if value="{{isLive}}" hint-placeholder-val="{{true}}">
+    <div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px;">
+
+      <div style="flex-shrink: 0; display: flex; align-items: center; gap: 16px;">
+        <div style="font-family: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 30px; letter-spacing: -0.02em; text-transform: uppercase;">Live map</div>
+        <div style="flex-grow: 1;"></div>
+        <div style="display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 1.5px solid #17171A; font-size: 13px; font-weight: 600;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 8v4l2.5 2.5" stroke="#17171A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="8.5" stroke="#17171A" stroke-width="1.8"/>
+          </svg>
+          <span>Replay today</span>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; min-height: 0; display: flex; gap: 20px;">
+
+        <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px;">
+
+          <div style="flex-shrink: 0; height: 76px; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; display: flex; align-items: center; padding: 0 20px; gap: 28px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+            <div style="display: flex; flex-direction: column; gap: 3px;">
+                <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">VAN-1 &middot; FL 8842 KM</div>
+                <div style="font-size: 12px; color: #6E6E73;">IMEI 356938035643809</div>
+            </div>
+            <div style="width: 1px; height: 40px; background: #E3E3DE;"></div>
+            <div style="display: flex; gap: 28px;">
+              <div style="display: flex; flex-direction: column; gap: 3px;">
+                <div style="font-size: 11px; color: #6E6E73; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600;">Speed</div>
+                <div style="font-size: 15px; font-weight: 600;">24 mph</div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px;">
+                <div style="font-size: 11px; color: #6E6E73; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600;">Last fix</div>
+                <div style="font-size: 15px; font-weight: 600;">4 sec ago</div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px;">
+                <div style="font-size: 11px; color: #6E6E73; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600;">Position</div>
+                <div style="font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums;">25.7042, -80.4361</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="flex-grow: 1; min-height: 0; border-radius: 14px; border: 1px solid #E3E3DE; overflow: hidden; position: relative; background: #E9E9E4; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+            <svg viewBox="0 0 900 620" preserveAspectRatio="xMidYMid slice" style="width: 100%; height: 100%; display: block;" aria-hidden="true">
+              <rect x="0" y="0" width="900" height="620" fill="#E9E9E4"/>
+              <rect x="40" y="30" width="240" height="150" rx="6" fill="#F2F2EE"/>
+              <rect x="330" y="30" width="200" height="150" rx="6" fill="#F2F2EE"/>
+              <rect x="580" y="30" width="280" height="150" rx="6" fill="#F2F2EE"/>
+              <rect x="40" y="230" width="240" height="170" rx="6" fill="#F2F2EE"/>
+              <rect x="330" y="230" width="200" height="170" rx="6" fill="#E4EBE2"/>
+              <rect x="580" y="230" width="280" height="170" rx="6" fill="#F2F2EE"/>
+              <rect x="40" y="450" width="340" height="140" rx="6" fill="#F2F2EE"/>
+              <rect x="430" y="450" width="430" height="140" rx="6" fill="#F2F2EE"/>
+              <g stroke="#FFFFFF" stroke-linecap="round">
+                <path d="M0 205h900" stroke-width="16"/>
+                <path d="M0 425h900" stroke-width="16"/>
+                <path d="M305 0v620" stroke-width="14"/>
+                <path d="M555 0v620" stroke-width="14"/>
+                <path d="M0 100h900" stroke-width="6"/>
+                <path d="M0 320h900" stroke-width="6"/>
+                <path d="M0 520h900" stroke-width="6"/>
+                <path d="M160 0v620" stroke-width="6"/>
+                <path d="M405 0v620" stroke-width="6"/>
+                <path d="M700 0v620" stroke-width="6"/>
+              </g>
+              <circle cx="160" cy="320" r="74" fill="#1A18F0" fill-opacity="0.09" stroke="#1A18F0" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="7 6"/>
+              <circle cx="700" cy="205" r="66" fill="#1A18F0" fill-opacity="0.09" stroke="#1A18F0" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="7 6"/>
+              <path d="M160 320 L160 205 L405 205 L405 425 L555 425" stroke="#1A18F0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <path d="M555 425 L700 425 L700 205" stroke="#1A18F0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="2 14" stroke-opacity="0.45"/>
+              <g>
+                <circle cx="160" cy="320" r="13" fill="#FFFFFF" stroke="#17171A" stroke-width="2.5"/>
+                <path d="M154 320v-6l6-4 6 4v6" stroke="#17171A" stroke-width="2" fill="none" stroke-linejoin="round"/>
+              </g>
+              <g>
+                <circle cx="700" cy="205" r="13" fill="#1A18F0" stroke="#FFFFFF" stroke-width="2.5"/>
+                <path d="M696 205l3 3.5 5.5-6" stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </g>
+              <g>
+                <circle cx="555" cy="425" r="27" fill="#1A18F0" fill-opacity="0.18"/>
+                <circle cx="555" cy="425" r="17" fill="#17171A" stroke="#FFFFFF" stroke-width="3"/>
+                <path d="M547 423.5h9v6h-9z" fill="#FFFFFF"/>
+                <path d="M556 425.5h4l2.5 2.5v1.5h-6.5z" fill="#FFFFFF"/>
+              </g>
+            </svg>
+            <div style="position: absolute; left: 16px; bottom: 16px; display: flex; gap: 8px;">
+              <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 999px; padding: 8px 14px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(23,23,26,0.1);">
+                <span style="width: 8px; height: 8px; border-radius: 999px; background: #1A18F0; display: block;"></span>Coral Way K-8 &middot; pickup zone
+              </div>
+              <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 999px; padding: 8px 14px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(23,23,26,0.1);">
+                <span style="width: 8px; height: 8px; border-radius: 999px; background: #17171A; display: block;"></span>Gina&#39;s Gymnastics &middot; drop-off zone
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="width: 380px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; min-height: 0;">
+
+          <div style="flex-shrink: 0; background: #1A18F0; border-radius: 14px; padding: 20px; color: #FFFFFF; box-shadow: 0 10px 24px rgba(26,24,240,0.28);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; opacity: 0.75;">Ride in progress</div>
+              <div style="font-size: 12px; font-weight: 600; background: rgba(255,255,255,0.18); padding: 4px 10px; border-radius: 999px;">started 3:12 PM</div>
+            </div>
+            <div style="font-family: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 24px; line-height: 1.05; letter-spacing: -0.02em; text-transform: uppercase; margin: 12px 0 4px;">Coral&nbsp;Way K-8 &rarr; The&nbsp;Gym</div>
+            <div style="font-size: 13px; opacity: 0.85;">6 children on this window &middot; 6 parents texted</div>
+            <div style="display: flex; gap: 0; margin-top: 18px; align-items: flex-start;">
+              <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="width: 18px; height: 18px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; justify-content: center;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#1A18F0" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                  <span style="height: 2px; flex-grow: 1; background: #FFFFFF;"></span>
+                </div>
+                <div style="font-size: 12px; font-weight: 700;">Arrived at school</div>
+                <div style="font-size: 12px; opacity: 0.8;">3:12 PM</div>
+              </div>
+              <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="width: 18px; height: 18px; border-radius: 999px; background: #1A18F0; border: 4px solid #FFFFFF; box-sizing: border-box; display: block;"></span>
+                  <span style="height: 2px; flex-grow: 1; background: rgba(255,255,255,0.35);"></span>
+                </div>
+                <div style="font-size: 12px; font-weight: 700;">En route</div>
+                <div style="font-size: 12px; opacity: 0.8;">now &middot; 3.1 mi to go</div>
+              </div>
+              <div style="width: 110px; display: flex; flex-direction: column; gap: 8px;">
+                <span style="width: 18px; height: 18px; border-radius: 999px; border: 2px solid rgba(255,255,255,0.5); box-sizing: border-box; display: block;"></span>
+                <div style="font-size: 12px; font-weight: 700; opacity: 0.75;">Arrived at gym</div>
+                <div style="font-size: 12px; opacity: 0.6;">pending</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="flex-shrink: 0; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px 18px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73;">Later today &middot; Wednesday</div>
+              <div style="font-size: 12px; font-weight: 600; color: #1A18F0;">Open schedule</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 66px; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums;">4:15 PM</div>
+              <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+                <div style="font-size: 13px; font-weight: 600;">Sunset Park Elementary</div>
+                <div style="font-size: 12px; color: #6E6E73;">4 children &middot; VAN-1</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="flex-grow: 1; min-height: 0; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-shrink: 0;">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73;">Zone events</div>
+              <div style="font-size: 12px; font-weight: 600; color: #1A18F0;">View all</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow: hidden;">
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="width: 28px; height: 28px; border-radius: 999px; background: #E9E9FE; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" stroke="#1A18F0" stroke-width="1.9" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="#1A18F0" stroke-width="1.9"/></svg>
+                </span>
+                <div style="flex-grow: 1;">
+                  <div style="font-size: 13px; font-weight: 600;">Arrived &middot; Coral Way K-8 Center</div>
+                  <div style="font-size: 12px; color: #6E6E73; margin-top: 2px;">3:12 PM &middot; 6 parents texted</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="width: 28px; height: 28px; border-radius: 999px; background: #F2F2EE; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M14 5l7 7-7 7" stroke="#6E6E73" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12H4" stroke="#6E6E73" stroke-width="1.9" stroke-linecap="round"/></svg>
+                </span>
+                <div style="flex-grow: 1;">
+                  <div style="font-size: 13px; font-weight: 600;">Left &middot; Gina&#39;s Gymnastics</div>
+                  <div style="font-size: 12px; color: #6E6E73; margin-top: 2px;">2:48 PM &middot; no notification sent</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="width: 28px; height: 28px; border-radius: 999px; background: #FDECE9; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.2" fill="#C0392B"/><circle cx="12" cy="12" r="8.5" stroke="#C0392B" stroke-width="1.8"/></svg>
+                </span>
+                <div style="flex-grow: 1;">
+                  <div style="font-size: 13px; font-weight: 600;">Tracker silent for 14 min</div>
+                  <div style="font-size: 12px; color: #6E6E73; margin-top: 2px;">12:02 PM &middot; recovered</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isChildren}}" hint-placeholder-val="{{false}}">
+    <div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px;">
+
+      <div style="flex-shrink: 0; display: flex; align-items: center; gap: 16px;">
+        <div style="font-family: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 30px; letter-spacing: -0.02em; text-transform: uppercase;">Children</div>
+        <div style="font-size: 13px; color: #6E6E73; padding-top: 6px;">148 enrolled &middot; 9 riding Wednesday</div>
+        <div style="flex-grow: 1;"></div>
+        <div style="display: flex; align-items: center; gap: 9px; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 999px; padding: 10px 16px; width: 220px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="#6E6E73" stroke-width="1.9"/><path d="M16 16l4.5 4.5" stroke="#6E6E73" stroke-width="1.9" stroke-linecap="round"/></svg>
+          <span style="font-size: 13px; color: #6E6E73;">Search child or parent</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 999px; padding: 10px 16px; font-size: 13px; font-weight: 600;">
+          <span>Wednesday</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9.5l6 6 6-6" stroke="#17171A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; border: 1.5px solid #17171A; color: #17171A; border-radius: 999px; padding: 10px 19px; font-size: 13px; font-weight: 600;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="#17171A" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <span>Add child</span>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; min-height: 0; display: flex; gap: 20px;">
+
+        <div style="flex-grow: 1; min-width: 0; min-height: 0; overflow: hidden;">
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;">
+
+            <div style="background: #F7F7FF; border: 1.5px solid #1A18F0; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #1A18F0; color: #FFFFFF; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">MA</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Maya Alvarez</span>
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #FFFFFF; background: #1A18F0; padding: 4px 9px; border-radius: 999px; flex-shrink: 0;">On ride</span>
+              </div>
+              <div style="font-size: 12px; color: #6E6E73;">Parent &middot; Carolina Alvarez</div>
+              <div style="font-size: 12px; color: #3D3D42;">Coral Way K-8 &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #FFFFFF; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #FFFFFF; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">3:00 PM</span>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #EFEFEB; color: #6E6E73; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">LB</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Leo Bermudez</span>
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #FFFFFF; background: #1A18F0; padding: 4px 9px; border-radius: 999px; flex-shrink: 0;">On ride</span>
+              </div>
+              <div style="font-size: 12px; color: #6E6E73;">Parent &middot; Ana Bermudez</div>
+              <div style="font-size: 12px; color: #3D3D42;">Coral Way K-8 &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">3:00 PM</span>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #EFEFEB; color: #6E6E73; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">SC</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Sofia Castillo</span>
+                <span style="font-size: 12px; color: #6E6E73; font-variant-numeric: tabular-nums; flex-shrink: 0;">4:15 PM</span>
+              </div>
+              <div style="font-size: 12px; color: #6E6E73;">Parent &middot; Ruth Castillo</div>
+              <div style="font-size: 12px; color: #3D3D42;">Sunset Park &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">&nbsp;</span>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #EFEFEB; color: #6E6E73; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">NP</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Nina Petrova</span>
+                <span style="font-size: 12px; color: #6E6E73; flex-shrink: 0;">Not scheduled</span>
+              </div>
+              <div style="font-size: 12px; color: #6E6E73;">Parent &middot; Elena Petrova</div>
+              <div style="font-size: 12px; color: #3D3D42;">Sunset Park &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">4:15 PM</span>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #EFEFEB; color: #6E6E73; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">DR</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Daniela Rojas</span>
+                <span style="font-size: 12px; color: #6E6E73; flex-shrink: 0;">Not scheduled</span>
+              </div>
+              <div style="font-size: 12px; color: #6E6E73;">Parent &middot; Pablo Rojas</div>
+              <div style="font-size: 12px; color: #3D3D42;">Devon Aire K-8 &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">3:45 PM</span>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #EFEFEB; color: #6E6E73; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">JT</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Jade Thompson</span>
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #FFFFFF; background: #1A18F0; padding: 4px 9px; border-radius: 999px; flex-shrink: 0;">On ride</span>
+              </div>
+              <div style="font-size: 12px; color: #6E6E73;">Parent &middot; Kim Thompson</div>
+              <div style="font-size: 12px; color: #3D3D42;">Coral Way K-8 &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">3:00 PM</span>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #EFEFEB; color: #6E6E73; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">AM</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Amara Mensah</span>
+                <span style="font-size: 12px; color: #6E6E73; flex-shrink: 0;">Not scheduled</span>
+              </div>
+              <div style="font-size: 12px; color: #6E6E73;">Parent &middot; Grace Mensah</div>
+              <div style="font-size: 12px; color: #3D3D42;">Devon Aire K-8 &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">3:45 PM</span>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #FDECE9; color: #C0392B; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">VO</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Valeria Ortiz</span>
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #FFFFFF; background: #1A18F0; padding: 4px 9px; border-radius: 999px; flex-shrink: 0;">On ride</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 7px;">
+                <span style="font-size: 12px; color: #6E6E73;">Parent &middot; Luis Ortiz</span>
+                <span style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #C0392B; background: #FDECE9; padding: 3px 6px; border-radius: 999px;">No phone</span>
+              </div>
+              <div style="font-size: 12px; color: #3D3D42;">Coral Way K-8 &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">3:00 PM</span>
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0; background: #EFEFEB; color: #6E6E73; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">RK</span>
+                <span style="font-size: 14px; font-weight: 600; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Ruby Kim</span>
+                <span style="font-size: 12px; color: #6E6E73; font-variant-numeric: tabular-nums; flex-shrink: 0;">4:15 PM</span>
+              </div>
+              <div style="font-size: 12px; color: #6E6E73;">Parent &middot; Hana Kim</div>
+              <div style="font-size: 12px; color: #3D3D42;">Sunset Park &rarr; The Gym</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <div style="display: flex; gap: 4px;">
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">M</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">W</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #F2F2EE; color: #6E6E73; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">T</span>
+                  <span style="width: 24px; height: 24px; border-radius: 8px; background: #1A18F0; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">F</span>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto;">&nbsp;</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div style="width: 392px; flex-shrink: 0; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+
+          <div style="flex-shrink: 0; padding: 20px 20px 18px; border-bottom: 1px solid #EFEFEB;">
+            <div style="display: flex; align-items: flex-start; gap: 13px;">
+              <span style="width: 46px; height: 46px; border-radius: 999px; background: #1A18F0; color: #FFFFFF; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">MA</span>
+              <div style="flex-grow: 1;">
+                <div style="font-family: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 19px; letter-spacing: -0.01em;">Maya Alvarez</div>
+                <div style="font-size: 12px; color: #6E6E73; margin-top: 3px;">Enrolled Aug 14, 2026 &middot; ID 1042</div>
+              </div>
+              <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #FFFFFF; background: #1A18F0; padding: 5px 11px; border-radius: 999px;">On ride</span>
+            </div>
+          </div>
+
+          <div style="flex-grow: 1; min-height: 0; overflow: hidden; padding: 18px 20px; display: flex; flex-direction: column; gap: 18px;">
+
+            <div>
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73; margin-bottom: 10px;">Parent &amp; notifications</div>
+              <div style="display: flex; flex-direction: column; gap: 9px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 13px; font-weight: 600;">Carolina Alvarez</span>
+                  <span style="font-size: 12px; color: #1A18F0; font-weight: 600;">Edit</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6.5 4h3l1.5 4-2 1.5a11 11 0 0 0 5.5 5.5L16 13l4 1.5v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4.5 6.2 2 2 0 0 1 6.5 4Z" stroke="#6E6E73" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                  <span style="font-size: 13px; color: #3D3D42; font-variant-numeric: tabular-nums;">+1 (305) 555-0148</span>
+                  <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #1A18F0; background: #E9E9FE; padding: 3px 7px; border-radius: 999px;">SMS on</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="5.5" width="18" height="13" rx="2.5" stroke="#6E6E73" stroke-width="1.7"/><path d="M4 7l8 5.5L20 7" stroke="#6E6E73" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                  <span style="font-size: 13px; color: #3D3D42;">c.alvarez@example.com</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73; margin-bottom: 10px;">Route</div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px;">
+                  <div style="font-size: 13px; font-weight: 600;">Coral Way K-8 Center &rarr; Gina&#39;s Gymnastics</div>
+                  <div style="font-size: 12px; color: #6E6E73;">VAN-1 &middot; FL 8842 KM</div>
+                </div>
+                <span style="font-size: 12px; color: #1A18F0; font-weight: 600;">Change</span>
+              </div>
+            </div>
+
+            <div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73;">Pickup schedule</div>
+                <div style="font-size: 12px; color: #1A18F0; font-weight: 600;">+ Add day</div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 10px; border: 1px solid #E3E3DE; border-radius: 10px; padding: 10px 13px;">
+                  <span style="width: 84px; font-size: 13px; font-weight: 600;">Monday</span>
+                  <span style="flex-grow: 1; font-size: 13px; font-variant-numeric: tabular-nums;">3:00 PM</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 20l4-1 10.5-10.5a2.1 2.1 0 0 0-3-3L5 16l-1 4Z" stroke="#6E6E73" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; border: 1.5px solid #1A18F0; border-radius: 10px; padding: 10px 13px; background: #F7F7FF;">
+                  <span style="width: 84px; font-size: 13px; font-weight: 600;">Wednesday</span>
+                  <span style="flex-grow: 1; font-size: 13px; font-variant-numeric: tabular-nums; font-weight: 600;">3:00 PM</span>
+                  <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #1A18F0;">Today</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; border: 1px solid #E3E3DE; border-radius: 10px; padding: 10px 13px;">
+                  <span style="width: 84px; font-size: 13px; font-weight: 600;">Friday</span>
+                  <span style="flex-grow: 1; font-size: 13px; font-variant-numeric: tabular-nums;">3:00 PM</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 20l4-1 10.5-10.5a2.1 2.1 0 0 0-3-3L5 16l-1 4Z" stroke="#6E6E73" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div style="flex-shrink: 0; border-top: 1px solid #EFEFEB; padding: 14px 20px; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1; text-align: center; background: #1A18F0; color: #FFFFFF; border-radius: 999px; padding: 12px 0; font-size: 13px; font-weight: 700;">Save changes</div>
+            <div style="text-align: center; border: 1.5px solid #E3E3DE; color: #6E6E73; border-radius: 999px; padding: 11px 18px; font-size: 13px; font-weight: 600;">Remove</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isRoutes}}" hint-placeholder-val="{{false}}">
+    <div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px;">
+
+      <div style="flex-shrink: 0; display: flex; align-items: center; gap: 16px;">
+        <div style="font-family: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 30px; letter-spacing: -0.02em; text-transform: uppercase;">Routes &amp; zones</div>
+        <div style="flex-grow: 1;"></div>
+        <div style="display: flex; align-items: center; gap: 8px; background: #1A18F0; color: #FFFFFF; border-radius: 999px; padding: 11px 20px; font-size: 13px; font-weight: 700;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <span>Add route</span>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; min-height: 0; display: flex; gap: 20px;">
+
+        <div style="width: 420px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; min-height: 0; overflow: hidden;">
+
+          <div style="flex-shrink: 0; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px 18px; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+            <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73; margin-bottom: 12px;">Routes</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="border: 1.5px solid #1A18F0; background: #F7F7FF; border-radius: 11px; padding: 12px 13px; display: flex; flex-direction: column; gap: 5px;">
+                <div style="font-size: 13px; font-weight: 700;">Coral Way K-8 &rarr; The Gym</div>
+                <div style="font-size: 12px; color: #6E6E73;">VAN-1 &middot; 6 children &middot; M W F</div>
+              </div>
+              <div style="border: 1px solid #E3E3DE; border-radius: 11px; padding: 12px 13px; display: flex; flex-direction: column; gap: 5px;">
+                <div style="font-size: 13px; font-weight: 600;">Sunset Park &rarr; The Gym</div>
+                <div style="font-size: 12px; color: #6E6E73;">VAN-1 &middot; 4 children &middot; T W Th</div>
+              </div>
+              <div style="border: 1px solid #E3E3DE; border-radius: 11px; padding: 12px 13px; display: flex; flex-direction: column; gap: 5px;">
+                <div style="font-size: 13px; font-weight: 600;">Devon Aire K-8 &rarr; The Gym</div>
+                <div style="font-size: 12px; color: #6E6E73;">VAN-1 &middot; 5 children &middot; M F</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="flex-grow: 1; min-height: 0; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-shrink: 0;">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73;">Geofences</div>
+              <div style="display: flex; gap: 7px;">
+                <div style="border: 1.5px solid #1A18F0; background: #F7F7FF; color: #1A18F0; border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 700;">School</div>
+                <div style="border: 1.5px solid #E3E3DE; color: #6E6E73; border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600;">Gym</div>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow: hidden;">
+              <div style="border: 1px solid #E3E3DE; border-radius: 11px; padding: 12px 13px; display: flex; align-items: center; gap: 11px;">
+                <span style="width: 32px; height: 32px; border-radius: 9px; background: #F2F2EE; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 20V9.5L12 5l8 4.5V20" stroke="#6E6E73" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 20v-5h5v5" stroke="#6E6E73" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                </span>
+                <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px;">
+                  <div style="font-size: 13px; font-weight: 600;">Devon Aire K-8 Center</div>
+                  <div style="font-size: 12px; color: #6E6E73;">School &middot; 110 m radius</div>
+                </div>
+                <span style="width: 34px; height: 20px; border-radius: 999px; background: #D8D8D2; display: flex; align-items: center; padding: 0 3px; box-sizing: border-box; flex-shrink: 0;"><span style="width: 14px; height: 14px; border-radius: 999px; background: #FFFFFF; display: block;"></span></span>
+              </div>
+              <div style="border: 1px solid #E3E3DE; border-radius: 11px; padding: 12px 13px; display: flex; align-items: center; gap: 11px;">
+                <span style="width: 32px; height: 32px; border-radius: 9px; background: #17171A; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <img src="gina-mark-white.webp" alt="" style="width: 15px; height: 15px; display: block;">
+                </span>
+                <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px;">
+                  <div style="font-size: 13px; font-weight: 600;">Gina&#39;s Gymnastics</div>
+                  <div style="font-size: 12px; color: #6E6E73;">Gym &middot; 90 m radius</div>
+                </div>
+                <span style="width: 34px; height: 20px; border-radius: 999px; background: #1A18F0; display: flex; align-items: center; justify-content: flex-end; padding: 0 3px; box-sizing: border-box; flex-shrink: 0;"><span style="width: 14px; height: 14px; border-radius: 999px; background: #FFFFFF; display: block;"></span></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="flex-grow: 1; min-height: 0; border-radius: 14px; border: 1px solid #E3E3DE; overflow: hidden; position: relative; background: #E9E9E4; box-shadow: 0 1px 2px rgba(23,23,26,0.04), 0 6px 16px rgba(23,23,26,0.07);">
+          <svg viewBox="0 0 900 620" preserveAspectRatio="xMidYMid slice" style="width: 100%; height: 100%; display: block;" aria-hidden="true">
+            <rect x="0" y="0" width="900" height="620" fill="#E9E9E4"/>
+            <rect x="40" y="30" width="240" height="150" rx="6" fill="#F2F2EE"/>
+            <rect x="330" y="30" width="200" height="150" rx="6" fill="#F2F2EE"/>
+            <rect x="580" y="30" width="280" height="150" rx="6" fill="#F2F2EE"/>
+            <rect x="40" y="230" width="240" height="170" rx="6" fill="#F2F2EE"/>
+            <rect x="330" y="230" width="200" height="170" rx="6" fill="#E4EBE2"/>
+            <rect x="580" y="230" width="280" height="170" rx="6" fill="#F2F2EE"/>
+            <rect x="40" y="450" width="340" height="140" rx="6" fill="#F2F2EE"/>
+            <rect x="430" y="450" width="430" height="140" rx="6" fill="#F2F2EE"/>
+            <g stroke="#FFFFFF" stroke-linecap="round">
+              <path d="M0 205h900" stroke-width="16"/>
+              <path d="M0 425h900" stroke-width="16"/>
+              <path d="M305 0v620" stroke-width="14"/>
+              <path d="M555 0v620" stroke-width="14"/>
+              <path d="M0 100h900" stroke-width="6"/>
+              <path d="M0 320h900" stroke-width="6"/>
+              <path d="M0 520h900" stroke-width="6"/>
+              <path d="M160 0v620" stroke-width="6"/>
+              <path d="M405 0v620" stroke-width="6"/>
+              <path d="M700 0v620" stroke-width="6"/>
+            </g>
+            <circle cx="160" cy="320" r="74" fill="#1A18F0" fill-opacity="0.09" stroke="#1A18F0" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="7 6"/>
+            <circle cx="700" cy="205" r="66" fill="#1A18F0" fill-opacity="0.09" stroke="#1A18F0" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="7 6"/>
+            <path d="M160 320 L160 205 L405 205 L405 425 L555 425 L700 425 L700 205" stroke="#1A18F0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-opacity="0.55"/>
+            <g>
+              <circle cx="160" cy="320" r="13" fill="#FFFFFF" stroke="#17171A" stroke-width="2.5"/>
+              <path d="M154 320v-6l6-4 6 4v6" stroke="#17171A" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            </g>
+            <g>
+              <circle cx="700" cy="205" r="13" fill="#1A18F0" stroke="#FFFFFF" stroke-width="2.5"/>
+              <path d="M696 205l3 3.5 5.5-6" stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+          </svg>
+          <div style="position: absolute; left: 16px; bottom: 16px; display: flex; gap: 8px;">
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 999px; padding: 8px 14px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(23,23,26,0.1);">
+              <span style="width: 8px; height: 8px; border-radius: 999px; background: #1A18F0; display: block;"></span>Coral Way K-8 &middot; pickup zone
+            </div>
+            <div style="background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 999px; padding: 8px 14px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(23,23,26,0.1);">
+              <span style="width: 8px; height: 8px; border-radius: 999px; background: #17171A; display: block;"></span>Gina&#39;s Gymnastics &middot; drop-off zone
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script>
+class Component extends DCLogic {
+  go(section) {
+    return () => this.setState({ section });
+  }
+  renderVals() {
+    const s = (this.state && this.state.section) || 'live';
+    const style = (key) => `display:flex;align-items:center;gap:10px;height:42px;padding:0 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;background:${s === key ? '#1A18F0' : 'transparent'};color:${s === key ? '#FFFFFF' : '#A6A6AC'};`;
+    const color = (key) => (s === key ? '#FFFFFF' : '#A6A6AC');
+    return {
+      isLive: s === 'live',
+      isChildren: s === 'children',
+      isRoutes: s === 'routes',
+      navLiveStyle: style('live'),
+      navChildrenStyle: style('children'),
+      navRoutesStyle: style('routes'),
+      navLiveIconColor: color('live'),
+      navChildrenIconColor: color('children'),
+      navRoutesIconColor: color('routes'),
+      selectLive: this.go('live'),
+      selectChildren: this.go('children'),
+      selectRoutes: this.go('routes'),
+    };
+  }
+}
+</script>
+</body>
+</html>
