@@ -47,20 +47,22 @@
 
     <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
 
+      <div style="flex-shrink: 0; display: flex; align-items: center; gap: 16px;">
+        <div style="font-family: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 30px; letter-spacing: -0.02em; text-transform: uppercase;">Live map</div>
+        <div style="flex-grow: 1;"></div>
+        <div style="display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 1.5px solid #17171A; font-size: 13px; font-weight: 600;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 8v4l2.5 2.5" stroke="#17171A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="8.5" stroke="#17171A" stroke-width="1.8"/>
+          </svg>
+          <span>Replay today</span>
+        </div>
+      </div>
+
       <div style="flex-shrink: 0; height: 76px; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; display: flex; align-items: center; padding: 0 20px; gap: 28px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <span style="width: 40px; height: 40px; border-radius: 12px; background: #1A18F0; display: flex; align-items: center; justify-content: center;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M2 8.5A1.5 1.5 0 0 1 3.5 7h9A1.5 1.5 0 0 1 14 8.5V16H2V8.5Z" stroke="#FFFFFF" stroke-width="1.7" stroke-linejoin="round"/>
-              <path d="M14 10.5h3.6l3.4 3.6V16h-7v-5.5Z" stroke="#FFFFFF" stroke-width="1.7" stroke-linejoin="round"/>
-              <circle cx="6" cy="16.5" r="2" stroke="#FFFFFF" stroke-width="1.7"/>
-              <circle cx="17" cy="16.5" r="2" stroke="#FFFFFF" stroke-width="1.7"/>
-            </svg>
-          </span>
-          <div style="display: flex; flex-direction: column; gap: 3px;">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
             <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">VAN-1 &middot; FL 8842 KM</div>
             <div style="font-size: 12px; color: #6E6E73;">IMEI 356938035643809</div>
-          </div>
         </div>
         <div style="width: 1px; height: 40px; background: #E3E3DE;"></div>
         <div style="display: flex; gap: 28px;">
@@ -76,14 +78,6 @@
             <div style="font-size: 11px; color: #6E6E73; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600;">Position</div>
             <div style="font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums;">25.7042, -80.4361</div>
           </div>
-        </div>
-        <div style="flex-grow: 1;"></div>
-        <div style="display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 1.5px solid #17171A; font-size: 13px; font-weight: 600;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 8v4l2.5 2.5" stroke="#17171A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="12" cy="12" r="8.5" stroke="#17171A" stroke-width="1.8"/>
-          </svg>
-          <span>Replay today</span>
         </div>
       </div>
 
@@ -149,7 +143,7 @@
           <div style="font-size: 12px; font-weight: 600; background: rgba(255,255,255,0.18); padding: 4px 10px; border-radius: 999px;">started 3:12 PM</div>
         </div>
         <div style="font-family: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 27px; line-height: 1.05; letter-spacing: -0.02em; text-transform: uppercase; margin: 12px 0 4px;">Coral&nbsp;Way K-8 &rarr; The&nbsp;Gym</div>
-        <div style="font-size: 13px; opacity: 0.85;">6 children scheduled on this window &middot; parents notified</div>
+        <div style="font-size: 13px; opacity: 0.85;">6 children on this window &middot; 6 parents texted</div>
         <div style="display: flex; gap: 0; margin-top: 18px; align-items: flex-start;">
           <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -163,7 +157,7 @@
           </div>
           <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 18px; height: 18px; border-radius: 999px; background: #FFFFFF; border: 4px solid #FFFFFF; box-sizing: border-box; display: block;"></span>
+              <span style="width: 18px; height: 18px; border-radius: 999px; background: #1A18F0; border: 4px solid #FFFFFF; box-sizing: border-box; display: block;"></span>
               <span style="height: 2px; flex-grow: 1; background: rgba(255,255,255,0.35);"></span>
             </div>
             <div style="font-size: 12px; font-weight: 700;">En route</div>
@@ -179,26 +173,16 @@
 
       <div style="flex-shrink: 0; background: #FFFFFF; border: 1px solid #E3E3DE; border-radius: 14px; padding: 16px 18px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-          <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73;">Today &middot; Wednesday</div>
+          <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #6E6E73;">Later today &middot; Wednesday</div>
           <div style="font-size: 12px; font-weight: 600; color: #1A18F0;">Open schedule</div>
         </div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 66px; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums;">3:00 PM</div>
-            <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
-              <div style="font-size: 13px; font-weight: 600;">Coral Way K-8 Center</div>
-              <div style="font-size: 12px; color: #6E6E73;">6 children &middot; VAN-1</div>
-            </div>
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #1A18F0; background: #E9E9FE; padding: 5px 10px; border-radius: 999px;">Running</div>
-          </div>
-          <div style="height: 1px; background: #EFEFEB;"></div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <div style="width: 66px; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums;">4:15 PM</div>
             <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
               <div style="font-size: 13px; font-weight: 600;">Sunset Park Elementary</div>
               <div style="font-size: 12px; color: #6E6E73;">4 children &middot; VAN-1</div>
             </div>
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6E6E73; background: #F2F2EE; padding: 5px 10px; border-radius: 999px;">Upcoming</div>
           </div>
         </div>
       </div>
@@ -248,14 +232,7 @@
         </div>
       </div>
 
-      <div style="flex-shrink: 0; background: #17171A; border-radius: 14px; padding: 13px 18px; display: flex; align-items: center; gap: 22px;">
-        <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #8A8A90;">System</div>
-        <div style="display: flex; align-items: center; gap: 7px;"><span style="width: 7px; height: 7px; border-radius: 999px; background: #4ADE80; display: block;"></span><span style="font-size: 12px; color: #FFFFFF;">Traccar</span></div>
-        <div style="display: flex; align-items: center; gap: 7px;"><span style="width: 7px; height: 7px; border-radius: 999px; background: #4ADE80; display: block;"></span><span style="font-size: 12px; color: #FFFFFF;">Webhook</span></div>
-        <div style="display: flex; align-items: center; gap: 7px;"><span style="width: 7px; height: 7px; border-radius: 999px; background: #4ADE80; display: block;"></span><span style="font-size: 12px; color: #FFFFFF;">SMS queue &middot; 0</span></div>
-      </div>
-
-    </div>
+          </div>
   </div>
 </div>
 </x-dc>
