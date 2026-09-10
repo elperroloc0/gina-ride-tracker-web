@@ -74,10 +74,10 @@
     },
     {
       "id": "console-row",
-      "x": 0,
-      "y": 2000,
+      "x": -657,
+      "y": 2135,
       "w": 620,
-      "text": "CONSOLE V2 — desktop 1440x900, interactive\nOne screen, one persistent sidebar (Live map / Children / Routes & zones) instead of the top pill-bar across three separate pages. Children is a card grid, no table. Click a sidebar item to switch — it's a real prototype, not three flat mockups.\n\nMain/Children/Routes above are kept for comparison, not superseded yet."
+      "text": "CONSOLE V3 — desktop 1440x900, interactive\nMap is the full-bleed base layer (persists across all three sections). A slim icon-only rail floats left (Live map / Children / Routes & zones, max 3), a white content panel floats right next to it — both cards over the map, no opaque columns. Children is a scrollable list, no table. Click a rail icon to switch.\n\nMain/Children/Routes above are kept for comparison, not superseded yet."
     },
     {
       "id": "login-desktop-row",
