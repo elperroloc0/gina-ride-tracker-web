@@ -1,0 +1,5 @@
+# Published canvas bundle: the editor plus a copy of every .dc.html source,
+# regenerated on each publish. Tracking it would rewrite ~2.5 MB per artboard edit.
+ginas-ride-tracker.html
+
+.DS_Store
