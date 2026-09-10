@@ -1,0 +1,95 @@
+<!-- @dsCard name="Buttons" group="Actions" subtitle="Консольные, мобильные, сегментные, текстовые" width="1080" height="620" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buttons — Gina's Ride Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+<style>
+  :root{
+    --blue:#1A18F0; --blue-tint:#E9E9FE; --blue-surface:#F7F7FF; --blue-row:#F3F3FE;
+    --ink:#17171A; --ink-2:#3D3D42; --muted:#6E6E73; --muted-2:#9A9A9F;
+    --bg:#F5F5F2; --surface:#FFFFFF; --surface-2:#FAFAF8;
+    --line:#E3E3DE; --line-2:#EFEFEB; --fill:#F2F2EE; --fill-off:#D8D8D2;
+    --alert:#C0392B; --alert-tint:#FDECE9; --ok:#4ADE80;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none} a:hover{color:#1210B8}
+  main{padding:32px;display:flex;flex-direction:column;gap:30px}
+  h1{font-family:var(--display);font-size:24px;letter-spacing:-0.015em;margin:0}
+  .sub{font-size:13px;color:var(--muted);margin:7px 0 0;line-height:1.5;max-width:62ch;text-wrap:pretty}
+  section{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;max-width:62ch;text-wrap:pretty}
+  .surf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .var{display:flex;flex-direction:column;gap:7px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--fill);padding:1px 5px;border-radius:4px}
+
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Кнопки</h1>
+    <p class="sub">Все радиусы — <code>999px</code>. Минимальный тап-таргет на мобильном 44 px, поэтому мобильные варианты не меньше 52. Вторичная всегда контур, никогда заливка: на экране ровно одно основное действие.</p>
+  </header>
+  <section>
+    <div class="lbl">Консоль — 1440</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);padding:11px 20px;background:var(--blue);color:#FFF;font-size:13px;font-weight:700"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Add child</span></div>
+        <div class="cap">Основная · padding 11px 20px · 13/700</div>
+      </div>
+      <div class="var"><div style="border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);padding:12px 22px;background:var(--blue);color:#FFF;font-size:13px;font-weight:700">Save changes</div>
+        <div class="cap">Основная без иконки · padding 12px 22px</div>
+      </div>
+      <div class="var"><div style="border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);padding:11px 18px;border:1.5px solid var(--line);color:var(--muted);font-size:13px;font-weight:600">Remove</div>
+        <div class="cap">Вторичная · контур --line 1.5px · 13/600</div>
+      </div>
+      <div class="var"><div style="border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);padding:9px 16px;border:1.5px solid var(--ink);color:var(--ink);font-size:13px;font-weight:600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v4l2.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/></svg><span>Replay today</span></div>
+        <div class="cap">Контур --ink · страничное действие</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Родитель — 390</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);width:300px;height:54px;background:var(--blue);color:#FFF;font-size:15px;font-weight:700;letter-spacing:0.02em">Sign in</div>
+        <div class="cap">Основная · 54 px · 15/700 · +0.02em</div>
+      </div>
+      <div class="var"><div style="border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);width:300px;height:52px;background:var(--ink);color:#FFF;font-size:14px;font-weight:700;gap:10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 4h3l1.5 4-2 1.5a11 11 0 0 0 5.5 5.5L16 13l4 1.5v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4.5 6.2 2 2 0 0 1 6.5 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span>Call the gym</span></div>
+        <div class="cap">Тёмная · 52 px · 14/700 · escape hatch</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Сегментный выбор</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);width:140px;padding:9px 0;border:1.5px solid var(--blue);background:var(--blue-surface);color:var(--blue);font-size:13px;font-weight:700">School</div>
+        <div class="cap">Выбран · --blue-surface + контур --blue</div>
+      </div>
+      <div class="var"><div style="border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);width:140px;padding:9px 0;border:1.5px solid var(--line);color:var(--muted);font-size:13px;font-weight:600">Gym</div>
+        <div class="cap">Не выбран</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Текстовое действие</div>
+    <div class="row" style='align-items:flex-start;gap:28px'>
+      <div class="var"><div style="font-size:12px;font-weight:600;color:var(--blue)">Open schedule</div>
+        <div class="cap">12/600 --blue · вход во вторичный поток</div>
+      </div>
+      <div class="var"><div style="font-size:12px;font-weight:700;color:var(--blue)">+ New zone</div>
+        <div class="cap">12/700 --blue · создание</div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

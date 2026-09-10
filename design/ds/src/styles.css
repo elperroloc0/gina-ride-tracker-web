@@ -1,0 +1,231 @@
+/* Gina's Ride Tracker — component stylesheet.
+   Values transcribed from design/library/*.html. Layout is flex/grid with gap
+   only: no per-element margins for spacing neighbours. */
+
+
+/* Base. The DS owns the page font: without this, any markup that isn't a
+   .gds-* element falls back to the browser serif, which is never right here. */
+body {
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--bg);
+}
+[class^="gds-"], [class*=" gds-"] {
+  font-family: var(--body);
+  box-sizing: border-box;
+}
+
+/* ---------- Button ---------- */
+.gds-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: none; border-radius: var(--r-pill); cursor: pointer;
+  background: none; color: inherit; text-align: center;
+}
+.gds-btn--console { padding: 12px 22px; font-size: 13px; font-weight: 700; }
+.gds-btn--console.gds-btn--icon { padding: 11px 20px; }
+.gds-btn--mobile { min-height: 54px; padding: 0 24px; font-size: 15px; font-weight: 700; letter-spacing: 0.02em; }
+.gds-btn--primary { background: var(--blue); color: #FFF; }
+.gds-btn--secondary { border: 1.5px solid var(--line); color: var(--muted); font-weight: 600; }
+.gds-btn--console.gds-btn--secondary { padding: 11px 18px; }
+.gds-btn--ink { border: 1.5px solid var(--ink); color: var(--ink); font-weight: 600; }
+.gds-btn--console.gds-btn--ink { padding: 9px 16px; }
+.gds-btn--dark { background: var(--ink); color: #FFF; }
+.gds-btn--mobile.gds-btn--dark { min-height: 52px; font-size: 14px; }
+.gds-btn--text { padding: 0; color: var(--blue); font-size: 12px; font-weight: 600; min-height: 0; }
+
+/* ---------- Badge ---------- */
+.gds-badge {
+  display: inline-flex; align-items: center; border-radius: var(--r-pill);
+  text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;
+}
+.gds-badge--md { font-size: 11px; padding: 5px 10px; }
+.gds-badge--sm { font-size: 10px; padding: 3px 7px; }
+.gds-badge--now { background: var(--blue); color: #FFF; }
+.gds-badge--now.gds-badge--md { padding: 5px 11px; }
+.gds-badge--scheduled { background: var(--fill); color: var(--muted); }
+.gds-badge--info { background: var(--blue-tint); color: var(--blue); }
+.gds-badge--alert { background: var(--alert-tint); color: var(--alert); }
+.gds-badge--onColor {
+  background: rgba(255, 255, 255, 0.18); color: #FFF;
+  font-size: 12px; font-weight: 600; padding: 4px 10px;
+  text-transform: none; letter-spacing: 0;
+}
+
+/* ---------- Avatar ---------- */
+.gds-avatar {
+  border-radius: var(--r-pill); display: inline-flex; align-items: center;
+  justify-content: center; flex-shrink: 0; font-weight: 700;
+}
+.gds-avatar--24 { width: 24px; height: 24px; font-size: 11px; }
+.gds-avatar--30 { width: 30px; height: 30px; font-size: 12px; }
+.gds-avatar--32 { width: 32px; height: 32px; font-size: 12px; }
+.gds-avatar--46 { width: 46px; height: 46px; font-size: 16px; }
+.gds-avatar--selected { background: var(--blue); color: #FFF; }
+.gds-avatar--default { background: var(--line-2); color: var(--muted); }
+.gds-avatar--alert { background: var(--alert-tint); color: var(--alert); }
+.gds-avatar--onColor { background: rgba(255, 255, 255, 0.22); color: #FFF; }
+
+/* ---------- Liveness dot ---------- */
+.gds-dot { width: 7px; height: 7px; border-radius: var(--r-pill); display: inline-block; flex-shrink: 0; }
+.gds-dot--ok { background: var(--ok); }
+.gds-dot--stale { background: var(--alert); }
+.gds-dot-row { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; }
+.gds-dot-row--light { color: var(--muted); }
+.gds-dot-row--dark {
+  gap: 7px; padding: 6px 12px; border-radius: var(--r-pill);
+  background: #232327; color: #E5E5E8; font-weight: 500;
+}
+
+/* ---------- Toggle ---------- */
+.gds-toggle {
+  border: none; border-radius: var(--r-pill); display: inline-flex; align-items: center;
+  padding: 0 3px; flex-shrink: 0; cursor: pointer;
+}
+.gds-toggle--list { width: 34px; height: 20px; }
+.gds-toggle--form { width: 40px; height: 23px; }
+.gds-toggle.is-on { background: var(--blue); justify-content: flex-end; }
+.gds-toggle.is-off { background: var(--fill-off); justify-content: flex-start; }
+.gds-toggle__knob { border-radius: var(--r-pill); background: #FFF; display: block; }
+.gds-toggle--list .gds-toggle__knob { width: 14px; height: 14px; }
+.gds-toggle--form .gds-toggle__knob { width: 17px; height: 17px; }
+.gds-toggle-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border: 1px solid var(--line); border-radius: var(--r-row); padding: 12px 13px;
+}
+.gds-toggle-row__text { display: flex; flex-direction: column; gap: 3px; }
+.gds-toggle-row__label { font-size: 13px; font-weight: 600; color: var(--ink); }
+.gds-toggle-row__note { font-size: 12px; color: var(--muted); }
+
+/* ---------- Weekday chips ---------- */
+.gds-days { display: flex; align-items: center; gap: 10px; }
+.gds-days__chips { display: flex; }
+.gds-days--table .gds-days__chips { gap: 3px; }
+.gds-days--card .gds-days__chips { gap: 4px; }
+.gds-day {
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-weight: 700;
+}
+.gds-days--table .gds-day { width: 22px; height: 22px; border-radius: var(--r-chip-table); font-size: 11px; }
+.gds-days--card .gds-day { width: 30px; height: 30px; border-radius: var(--r-chip); font-size: 12px; }
+.gds-day.is-on { background: var(--blue); color: #FFF; }
+.gds-day.is-off { background: var(--fill); color: var(--muted); }
+.gds-days__time { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+
+/* ---------- Input ---------- */
+.gds-field {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--surface); border: 1px solid var(--line);
+}
+.gds-field--console { border-radius: var(--r-row); padding: 11px 13px; font-size: 13px; }
+.gds-field--search { border-radius: var(--r-pill); padding: 10px 16px; font-size: 13px; }
+.gds-field--mobile { height: 52px; border-radius: var(--r-field); padding: 0 16px; font-size: 15px; gap: 10px; }
+.gds-field:focus-within {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 0.5px var(--blue);
+  background: var(--blue-surface);
+}
+.gds-field__icon { color: var(--muted); flex-shrink: 0; }
+.gds-field__input {
+  border: none; background: transparent; outline: none; width: 100%;
+  font-size: inherit; color: var(--ink); padding: 0;
+}
+.gds-field__input::placeholder { color: var(--muted); }
+
+/* ---------- Segmented control ---------- */
+.gds-seg { display: inline-flex; gap: 8px; }
+.gds-seg__item {
+  border-radius: var(--r-pill); padding: 9px 16px; font-size: 13px; font-weight: 600;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer;
+}
+.gds-seg__item.is-on { background: var(--blue-surface); border-color: var(--blue); color: var(--blue); }
+
+/* ---------- Card ---------- */
+.gds-card { display: flex; flex-direction: column; }
+.gds-card--console {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-card); padding: 20px; gap: 16px;
+}
+.gds-card--mobile {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-card-mobile); padding: 18px; gap: 14px;
+}
+.gds-card--color {
+  background: var(--blue); color: #FFF;
+  border-radius: var(--r-card-mobile); padding: 16px; gap: 12px;
+}
+.gds-card__eyebrow {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; color: var(--muted);
+}
+.gds-card--color .gds-card__eyebrow { color: inherit; opacity: 0.75; }
+.gds-card__title {
+  font-family: var(--display); font-size: 19px; line-height: 1.05;
+  letter-spacing: -0.015em; text-wrap: pretty;
+}
+.gds-card--color .gds-card__title { font-size: 27px; letter-spacing: -0.02em; text-transform: uppercase; }
+
+/* ---------- Table ---------- */
+.gds-table {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-card); overflow: hidden;
+}
+.gds-tr {
+  display: flex; align-items: center; gap: 12px;
+  height: 62px; flex-shrink: 0; padding: 0 20px;
+}
+.gds-tr + .gds-tr { border-top: 1px solid var(--line-2); }
+.gds-tr--head {
+  height: 44px; background: var(--surface-2); border-bottom: 1px solid var(--line-2);
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 700; color: var(--muted);
+}
+.gds-tr.is-selected { background: var(--blue-row); border-left: 3px solid var(--blue); padding-left: 17px; }
+.gds-td { font-size: 13px; color: var(--ink-2); }
+.gds-tr--head .gds-td { font-size: inherit; letter-spacing: inherit; color: inherit; font-weight: inherit; }
+.gds-td--text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gds-td--schedule { flex: 0 0 190px; }
+.gds-td--day { flex: 0 0 110px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- Timeline ---------- */
+.gds-timeline--vertical { display: flex; flex-direction: column; }
+.gds-timeline--vertical .gds-tl__step { display: flex; gap: 13px; align-items: flex-start; }
+.gds-timeline--vertical .gds-tl__rail {
+  display: flex; flex-direction: column; align-items: center; width: 20px; flex-shrink: 0;
+}
+.gds-tl__marker {
+  width: 20px; height: 20px; border-radius: var(--r-pill); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+}
+.gds-tl__marker.is-done { background: var(--blue); color: #FFF; }
+.gds-tl__marker.is-current { background: #FFF; border: 5px solid var(--blue); }
+.gds-tl__marker.is-current.is-stale { border-color: var(--alert); }
+.gds-tl__marker.is-future { border: 2px solid var(--fill-off); }
+.gds-tl__check { width: 11px; height: 11px; }
+.gds-timeline--vertical .gds-tl__line { width: 2px; flex-grow: 1; min-height: 18px; background: var(--line); }
+.gds-tl__line.is-done { background: var(--blue); }
+.gds-timeline--vertical .gds-tl__body { flex-grow: 1; padding-bottom: 14px; }
+.gds-tl__label { font-size: 14px; font-weight: 700; color: var(--ink); text-wrap: pretty; }
+.gds-tl__step.is-future .gds-tl__label { color: var(--muted); }
+.gds-tl__time { font-size: 13px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+.gds-timeline--horizontal { display: flex; align-items: flex-start; }
+.gds-timeline--horizontal .gds-tl__step { display: flex; flex-direction: column; gap: 8px; flex: 1 1 0; min-width: 0; }
+.gds-timeline--horizontal .gds-tl__rail { display: flex; flex-direction: row; align-items: center; gap: 0; }
+.gds-timeline--horizontal .gds-tl__marker { width: 18px; height: 18px; }
+.gds-timeline--horizontal .gds-tl__line { height: 2px; flex-grow: 1; background: var(--line); }
+.gds-timeline--horizontal .gds-tl__label { font-size: 12px; font-weight: 700; }
+.gds-timeline--horizontal .gds-tl__time { font-size: 12px; margin-top: 0; }
+
+.gds-timeline--on-color { color: #FFF; }
+.gds-timeline--on-color .gds-tl__label { color: #FFF; }
+.gds-timeline--on-color .gds-tl__step.is-future .gds-tl__label { color: #FFF; opacity: 0.6; }
+.gds-timeline--on-color .gds-tl__time { color: #FFF; opacity: 0.8; }
+.gds-timeline--on-color .gds-tl__marker.is-done { background: #FFF; color: var(--blue); }
+.gds-timeline--on-color .gds-tl__marker.is-current { background: var(--blue); border: 4px solid #FFF; }
+.gds-timeline--on-color .gds-tl__marker.is-future { border: 2px solid rgba(255, 255, 255, 0.5); background: none; }
+.gds-timeline--on-color .gds-tl__line { background: rgba(255, 255, 255, 0.35); }
+.gds-timeline--on-color .gds-tl__line.is-done { background: #FFF; }
+
+/* ---------- Wave divider / map marker ---------- */
+.gds-wave { display: block; width: 100%; position: absolute; left: 0; bottom: -1px; }
+.gds-marker { display: block; }

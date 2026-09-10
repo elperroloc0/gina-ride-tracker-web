@@ -1,0 +1,78 @@
+<!-- @dsCard name="Input field" group="Controls" subtitle="Консоль, поиск, мобильный — с состоянием фокуса" width="1080" height="640" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Input field — Gina's Ride Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+<style>
+  :root{
+    --blue:#1A18F0; --blue-tint:#E9E9FE; --blue-surface:#F7F7FF; --blue-row:#F3F3FE;
+    --ink:#17171A; --ink-2:#3D3D42; --muted:#6E6E73; --muted-2:#9A9A9F;
+    --bg:#F5F5F2; --surface:#FFFFFF; --surface-2:#FAFAF8;
+    --line:#E3E3DE; --line-2:#EFEFEB; --fill:#F2F2EE; --fill-off:#D8D8D2;
+    --alert:#C0392B; --alert-tint:#FDECE9; --ok:#4ADE80;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none} a:hover{color:#1210B8}
+  main{padding:32px;display:flex;flex-direction:column;gap:30px}
+  h1{font-family:var(--display);font-size:24px;letter-spacing:-0.015em;margin:0}
+  .sub{font-size:13px;color:var(--muted);margin:7px 0 0;line-height:1.5;max-width:62ch;text-wrap:pretty}
+  section{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;max-width:62ch;text-wrap:pretty}
+  .surf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .var{display:flex;flex-direction:column;gap:7px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--fill);padding:1px 5px;border-radius:4px}
+
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Поля ввода</h1>
+    <p class="sub">Фокус кодируется двумя изменениями сразу — контур утолщается до 1.5 px и уходит в <code>--blue</code>, фон становится <code>--blue-surface</code>. Одного цвета недостаточно: фокус должен читаться и без цветовосприятия.</p>
+  </header>
+  <section>
+    <div class="lbl">Консоль</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="width:260px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 13px;font-size:13px">Coral Way K-8 Center</div>
+        <div class="cap">покой · r10 · 13 px</div>
+      </div>
+      <div class="var"><div style="width:260px;border:1.5px solid var(--blue);background:var(--blue-surface);border-radius:10px;padding:11px 13px;font-size:13px">Coral Way K-8 Center</div>
+        <div class="cap">фокус · контур --blue 1.5px + --blue-surface</div>
+      </div>
+      <div class="var"><div style="width:260px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 13px;font-size:13px;color:var(--muted)">Zone name</div>
+        <div class="cap">плейсхолдер · --muted</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Поиск — pill</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="width:240px;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:10px 16px"><span style="display:flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="var(--muted)" stroke-width="1.9"/><path d="M16 16l4.5 4.5" stroke="var(--muted)" stroke-width="1.9" stroke-linecap="round"/></svg></span><span style="font-size:13px;color:var(--muted)">Search child or parent</span></div>
+        <div class="cap">r999 · padding 10px 16px</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Родитель — 52 px</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="width:300px;height:52px;display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 16px;font-size:15px">c.alvarez@example.com</div>
+        <div class="cap">r12 · 15 px · тап-таргет</div>
+      </div>
+      <div class="var"><div style="width:300px;height:52px;display:flex;align-items:center;background:var(--surface);border:1.5px solid var(--blue);border-radius:12px;padding:0 16px;font-size:17px;letter-spacing:0.16em">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</div>
+        <div class="cap">фокус</div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

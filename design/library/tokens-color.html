@@ -1,0 +1,202 @@
+<!-- @dsCard name="Color tokens" group="Foundations" subtitle="18 токенов, каждый с ролью и посчитанным контрастом" width="1080" height="900" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Color tokens — Gina's Ride Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+<style>
+  :root{
+    --blue:#1A18F0; --blue-tint:#E9E9FE; --blue-surface:#F7F7FF; --blue-row:#F3F3FE;
+    --ink:#17171A; --ink-2:#3D3D42; --muted:#6E6E73; --muted-2:#9A9A9F;
+    --bg:#F5F5F2; --surface:#FFFFFF; --surface-2:#FAFAF8;
+    --line:#E3E3DE; --line-2:#EFEFEB; --fill:#F2F2EE; --fill-off:#D8D8D2;
+    --alert:#C0392B; --alert-tint:#FDECE9; --ok:#4ADE80;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none} a:hover{color:#1210B8}
+  main{padding:32px;display:flex;flex-direction:column;gap:30px}
+  h1{font-family:var(--display);font-size:24px;letter-spacing:-0.015em;margin:0}
+  .sub{font-size:13px;color:var(--muted);margin:7px 0 0;line-height:1.5;max-width:62ch;text-wrap:pretty}
+  section{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;max-width:62ch;text-wrap:pretty}
+  .surf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--fill);padding:1px 5px;border-radius:4px}
+  .sw{display:flex;flex-direction:column;gap:8px;width:186px}
+  .chip{height:62px;border-radius:12px;border:1px solid var(--line)}
+  .tk{font-size:12px;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .hex{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;text-transform:uppercase}
+  .use{font-size:11px;color:var(--muted);line-height:1.4}
+  .ratio{font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:2px 6px;border-radius:999px;display:inline-block}
+  .pass{background:var(--blue-tint);color:var(--blue)}
+  .fail{background:var(--alert-tint);color:var(--alert)}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Цвет</h1>
+    <p class="sub">Взято с ginasgymnastics.com. Правило: любой цвет текста даёт ≥ 4.5:1 на своём фоне — бейджи 10–11 px не считаются крупным текстом. <code>--muted-2</code> из текстовых ролей выведен: на белом он даёт 2.80:1 и до AA не дотягивает ни при каком оттенке, который остался бы серым.</p>
+  </header>
+  <section>
+    <div class="lbl">Accent</div>
+    <div class="row" style="align-items:flex-start;gap:16px">
+      <div class="sw">
+        <div class="chip" style="background:#1A18F0"></div>
+        <div class="tk">--blue</div>
+        <div class="hex">#1A18F0</div>
+        <span class="ratio pass">8.63:1 на белом тексте</span>
+        <div class="use">Активный пункт навигации, CTA, маркеры и радиусы геозон</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#E9E9FE"></div>
+        <div class="tk">--blue-tint</div>
+        <div class="hex">#E9E9FE</div>
+        
+        <div class="use">Фон синих бейджей и круглых иконок</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#F7F7FF"></div>
+        <div class="tk">--blue-surface</div>
+        <div class="hex">#F7F7FF</div>
+        
+        <div class="use">Фон выбранной карточки или поля</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#F3F3FE"></div>
+        <div class="tk">--blue-row</div>
+        <div class="hex">#F3F3FE</div>
+        
+        <div class="use">Фон выбранной строки таблицы</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Text</div>
+    <div class="row" style="align-items:flex-start;gap:16px">
+      <div class="sw">
+        <div class="chip" style="background:#17171A"></div>
+        <div class="tk">--ink</div>
+        <div class="hex">#17171A</div>
+        <span class="ratio pass">17.8:1 на --surface</span>
+        <div class="use">Основной текст, топбар консоли, тёмная шапка</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#3D3D42"></div>
+        <div class="tk">--ink-2</div>
+        <div class="hex">#3D3D42</div>
+        <span class="ratio pass">10.4:1 на --surface</span>
+        <div class="use">Текст ячеек таблицы, вторичный текст</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#6E6E73"></div>
+        <div class="tk">--muted</div>
+        <div class="hex">#6E6E73</div>
+        <span class="ratio pass">5.07:1 на --surface</span>
+        <div class="use">Подписи, caps-метки, плейсхолдеры, неактивные чипы. Единственный серый для текста</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#9A9A9F"></div>
+        <div class="tk">--muted-2</div>
+        <div class="hex">#9A9A9F</div>
+        <span class="ratio fail">2.80:1 — ниже AA</span>
+        <div class="use">Только не-текст: выключенные контролы</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Surface</div>
+    <div class="row" style="align-items:flex-start;gap:16px">
+      <div class="sw">
+        <div class="chip" style="background:#F5F5F2"></div>
+        <div class="tk">--bg</div>
+        <div class="hex">#F5F5F2</div>
+        
+        <div class="use">Фон приложения</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#FFFFFF"></div>
+        <div class="tk">--surface</div>
+        <div class="hex">#FFFFFF</div>
+        
+        <div class="use">Карточки, панели, поля ввода</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#FAFAF8"></div>
+        <div class="tk">--surface-2</div>
+        <div class="hex">#FAFAF8</div>
+        
+        <div class="use">Шапка и футер таблицы</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#F2F2EE"></div>
+        <div class="tk">--fill</div>
+        <div class="hex">#F2F2EE</div>
+        
+        <div class="use">Нейтральная заливка: неактивные чипы, аватары</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Line</div>
+    <div class="row" style="align-items:flex-start;gap:16px">
+      <div class="sw">
+        <div class="chip" style="background:#E3E3DE"></div>
+        <div class="tk">--line</div>
+        <div class="hex">#E3E3DE</div>
+        
+        <div class="use">Границы карточек, полей, кнопок-контуров</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#EFEFEB"></div>
+        <div class="tk">--line-2</div>
+        <div class="hex">#EFEFEB</div>
+        
+        <div class="use">Разделители внутри карточки и между строками</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#D8D8D2"></div>
+        <div class="tk">--fill-off</div>
+        <div class="hex">#D8D8D2</div>
+        
+        <div class="use">Выключенный тумблер, будущий шаг таймлайна</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">State</div>
+    <div class="row" style="align-items:flex-start;gap:16px">
+      <div class="sw">
+        <div class="chip" style="background:#C0392B"></div>
+        <div class="tk">--alert</div>
+        <div class="hex">#C0392B</div>
+        <span class="ratio pass">4.75:1 на --alert-tint</span>
+        <div class="use">Требует действия: нет телефона, молчащий трекер</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#FDECE9"></div>
+        <div class="tk">--alert-tint</div>
+        <div class="hex">#FDECE9</div>
+        
+        <div class="use">Фон под --alert</div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#4ADE80"></div>
+        <div class="tk">--ok</div>
+        <div class="hex">#4ADE80</div>
+        
+        <div class="use">Точка живости: данные идут</div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

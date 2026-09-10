@@ -1,0 +1,78 @@
+<!-- @dsCard name="Icon set" group="Foundations" subtitle="16 иконок, обводка 1.7–1.9, currentColor" width="1080" height="560" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Icon set — Gina's Ride Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+<style>
+  :root{
+    --blue:#1A18F0; --blue-tint:#E9E9FE; --blue-surface:#F7F7FF; --blue-row:#F3F3FE;
+    --ink:#17171A; --ink-2:#3D3D42; --muted:#6E6E73; --muted-2:#9A9A9F;
+    --bg:#F5F5F2; --surface:#FFFFFF; --surface-2:#FAFAF8;
+    --line:#E3E3DE; --line-2:#EFEFEB; --fill:#F2F2EE; --fill-off:#D8D8D2;
+    --alert:#C0392B; --alert-tint:#FDECE9; --ok:#4ADE80;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none} a:hover{color:#1210B8}
+  main{padding:32px;display:flex;flex-direction:column;gap:30px}
+  h1{font-family:var(--display);font-size:24px;letter-spacing:-0.015em;margin:0}
+  .sub{font-size:13px;color:var(--muted);margin:7px 0 0;line-height:1.5;max-width:62ch;text-wrap:pretty}
+  section{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;max-width:62ch;text-wrap:pretty}
+  .surf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .var{display:flex;flex-direction:column;gap:7px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--fill);padding:1px 5px;border-radius:4px}
+
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Иконки</h1>
+    <p class="sub">Рисуются вручную, сторонний набор не подключается: у Archivo Black плотная обводка, и тонкие сетки вроде Feather рядом с ней выглядят инородно.</p>
+  </header>
+  <section>
+    <div class="lbl">Набор</div>
+    <div class="row" style='align-items:flex-start;gap:14px'>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2 8.5A1.5 1.5 0 0 1 3.5 7h9A1.5 1.5 0 0 1 14 8.5V16H2V8.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 10.5h3.6l3.4 3.6V16h-7v-5.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="6" cy="16.5" r="2" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="16.5" r="2" stroke="currentColor" stroke-width="1.7"/></svg></span><div class="cap" style="text-align:center">van</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.9"/></svg></span><div class="cap" style="text-align:center">pin</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V9.5L12 5l8 4.5V20" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 20v-5h5v5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><div class="cap" style="text-align:center">school</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 4h3l1.5 4-2 1.5a11 11 0 0 0 5.5 5.5L16 13l4 1.5v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4.5 6.2 2 2 0 0 1 6.5 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><div class="cap" style="text-align:center">phone</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M4 7l8 5.5L20 7" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><div class="cap" style="text-align:center">mail</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 10a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19a2.2 2.2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><div class="cap" style="text-align:center">bell</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v4l2.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/></svg></span><div class="cap" style="text-align:center">clock</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/></svg></span><div class="cap" style="text-align:center">alert</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.9"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><div class="cap" style="text-align:center">search</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20l4-1 10.5-10.5a2.1 2.1 0 0 0-3-3L5 16l-1 4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><div class="cap" style="text-align:center">pencil</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9.5l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="cap" style="text-align:center">chevron</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 5l7 7-7 7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12H4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span><div class="cap" style="text-align:center">arrow</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/></svg></span><div class="cap" style="text-align:center">eye</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span><div class="cap" style="text-align:center">plus</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="cap" style="text-align:center">check</div></div>
+      <div class="var" style="width:88px;align-items:center"><span style="width:56px;height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.25 7.8A9.75 9.75 0 1 0 21.75 12v-1.05H13.95" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/></svg></span><div class="cap" style="text-align:center">logo</div></div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Правила</div>
+    <div class="row">
+      <div class="note">Только inline SVG, обводкой, <code>stroke-width: 1.7–1.9</code>, сетка 16/20/24. Все используют <code>currentColor</code> — цвет наследуется от контекста, отдельного варианта под каждый фон не заводится. Эмодзи в интерфейсе не используются: бренд их не использует, и они не перекрашиваются.</div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Когда иконка вообще ставится</div>
+    <div class="row">
+      <div class="note">Только там, где различает тип внутри списка — School против Gym в геозонах, приезд против проблемы в журнале событий. Рядом с карточкой, у которой единственный возможный субъект, глиф не ставится: «VAN-1» уже сказано словами.</div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

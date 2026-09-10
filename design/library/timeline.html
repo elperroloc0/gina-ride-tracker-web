@@ -1,0 +1,108 @@
+<!-- @dsCard name="Ride timeline" group="Ride state" subtitle="Вертикальный и горизонтальный, три состояния шага" width="1080" height="700" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ride timeline — Gina's Ride Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+<style>
+  :root{
+    --blue:#1A18F0; --blue-tint:#E9E9FE; --blue-surface:#F7F7FF; --blue-row:#F3F3FE;
+    --ink:#17171A; --ink-2:#3D3D42; --muted:#6E6E73; --muted-2:#9A9A9F;
+    --bg:#F5F5F2; --surface:#FFFFFF; --surface-2:#FAFAF8;
+    --line:#E3E3DE; --line-2:#EFEFEB; --fill:#F2F2EE; --fill-off:#D8D8D2;
+    --alert:#C0392B; --alert-tint:#FDECE9; --ok:#4ADE80;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none} a:hover{color:#1210B8}
+  main{padding:32px;display:flex;flex-direction:column;gap:30px}
+  h1{font-family:var(--display);font-size:24px;letter-spacing:-0.015em;margin:0}
+  .sub{font-size:13px;color:var(--muted);margin:7px 0 0;line-height:1.5;max-width:62ch;text-wrap:pretty}
+  section{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;max-width:62ch;text-wrap:pretty}
+  .surf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .var{display:flex;flex-direction:column;gap:7px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--fill);padding:1px 5px;border-radius:4px}
+
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Таймлайн поездки</h1>
+    <p class="sub">Несёт состояние поездки на обоих экранах. Порядок шагов фиксирован: забрали → едет → приехал. Четвёртого состояния нет — если поток замолчал, меняется маркер текущего шага, а не структура.</p>
+  </header>
+  <section>
+    <div class="lbl">Мобильный — вертикальный, рельс 20 px</div>
+    <div class="row" style='align-items:flex-start;gap:24px'>
+      <div class="var"><div style="width:330px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:14px"><div style="margin-top:0px"><div style="display:flex;gap:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;width:20px;flex-shrink:0"><span style="width:20px;height:20px;border-radius:999px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#FFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="width:2px;flex-grow:1;background:var(--line);min-height:18px"></span></div>
+          <div style="flex-grow:1;padding-bottom:2px"><div style="font-size:14px;font-weight:700;color:var(--ink)">Picked up at Coral Way K-8</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">3:12 PM</div></div>
+        </div></div><div style="margin-top:-8px"><div style="display:flex;gap:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;width:20px;flex-shrink:0"><span style="width:20px;height:20px;border-radius:999px;background:#FFF;border:5px solid var(--blue);box-sizing:border-box;display:block;flex-shrink:0"></span><span style="width:2px;flex-grow:1;background:var(--line);min-height:18px"></span></div>
+          <div style="flex-grow:1;padding-bottom:2px"><div style="font-size:14px;font-weight:700;color:var(--ink)">On the way to the gym</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">Van is moving &middot; 24 mph</div></div>
+        </div></div><div style="margin-top:-8px"><div style="display:flex;gap:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;width:20px;flex-shrink:0"><span style="width:20px;height:20px;border-radius:999px;border:2px solid var(--fill-off);box-sizing:border-box;display:block;flex-shrink:0"></span></div>
+          <div style="flex-grow:1;padding-bottom:0px"><div style="font-size:14px;font-weight:700;color:var(--muted)">Arrives at Gina&#39;s Gymnastics</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">You&#39;ll get a text the moment she&#39;s there</div></div>
+        </div></div></div>
+        <div class="cap">активная поездка</div>
+      </div>
+      <div class="var"><div style="width:330px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:14px"><div style="margin-top:0px"><div style="display:flex;gap:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;width:20px;flex-shrink:0"><span style="width:20px;height:20px;border-radius:999px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#FFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="width:2px;flex-grow:1;background:var(--line);min-height:18px"></span></div>
+          <div style="flex-grow:1;padding-bottom:2px"><div style="font-size:14px;font-weight:700;color:var(--ink)">Picked up at Coral Way K-8</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">3:12 PM</div></div>
+        </div></div><div style="margin-top:-8px"><div style="display:flex;gap:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;width:20px;flex-shrink:0"><span style="width:20px;height:20px;border-radius:999px;background:#FFF;border:5px solid var(--alert);box-sizing:border-box;display:block;flex-shrink:0"></span><span style="width:2px;flex-grow:1;background:var(--line);min-height:18px"></span></div>
+          <div style="flex-grow:1;padding-bottom:2px"><div style="font-size:14px;font-weight:700;color:var(--ink)">On the way to the gym</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">Last update 3:31 PM &middot; 6 minutes ago</div></div>
+        </div></div><div style="margin-top:-8px"><div style="display:flex;gap:13px">
+          <div style="display:flex;flex-direction:column;align-items:center;width:20px;flex-shrink:0"><span style="width:20px;height:20px;border-radius:999px;border:2px solid var(--fill-off);box-sizing:border-box;display:block;flex-shrink:0"></span></div>
+          <div style="flex-grow:1;padding-bottom:0px"><div style="font-size:14px;font-weight:700;color:var(--muted)">Arrives at Gina&#39;s Gymnastics</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">The arrival text needs the tracker</div></div>
+        </div></div></div>
+        <div class="cap">поток замолчал · кольцо --alert</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Десктоп — горизонтальный, на цветной карточке</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="width:380px;background:var(--blue);border-radius:14px;padding:20px;color:#FFF">
+        <div style="display:flex;gap:0;align-items:flex-start">
+          <div style="flex-grow:1;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px"><span style="width:18px;height:18px;border-radius:999px;background:#FFF;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#1A18F0" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="height:2px;flex-grow:1;background:#FFF"></span></div>
+            <div style="font-size:12px;font-weight:700">Arrived at school</div><div style="font-size:12px;opacity:0.8">3:12 PM</div>
+          </div>
+          <div style="flex-grow:1;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px"><span style="width:18px;height:18px;border-radius:999px;background:#1A18F0;border:4px solid #FFF;box-sizing:border-box;display:block;flex-shrink:0"></span><span style="height:2px;flex-grow:1;background:rgba(255,255,255,0.35)"></span></div>
+            <div style="font-size:12px;font-weight:700">En route</div><div style="font-size:12px;opacity:0.8">now &middot; 3.1 mi to go</div>
+          </div>
+          <div style="width:110px;display:flex;flex-direction:column;gap:8px">
+            <span style="width:18px;height:18px;border-radius:999px;border:2px solid rgba(255,255,255,0.5);box-sizing:border-box;display:block"></span>
+            <div style="font-size:12px;font-weight:700;opacity:0.75">Arrived at gym</div><div style="font-size:12px;opacity:0.6">pending</div>
+          </div>
+        </div></div>
+        <div class="cap">маркер текущего шага — белое кольцо на синем, не белый диск</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Три маркера</div>
+    <div class="row">
+      <div class="note">Пройден — заливка <code>--blue</code> с белой галочкой. Текущий — <strong>кольцо</strong> 5 px (на цветном фоне 4 px белым по синему). Будущий — контур <code>--fill-off</code> 2 px. Кольцо обязано отличаться от заливки: белое по белому даёт диск, неотличимый от пройденного шага без галочки.</div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

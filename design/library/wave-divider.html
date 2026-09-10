@@ -1,0 +1,64 @@
+<!-- @dsCard name="Wave divider" group="Foundations" subtitle="Единственный декоративный элемент системы" width="1080" height="420" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wave divider — Gina's Ride Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+<style>
+  :root{
+    --blue:#1A18F0; --blue-tint:#E9E9FE; --blue-surface:#F7F7FF; --blue-row:#F3F3FE;
+    --ink:#17171A; --ink-2:#3D3D42; --muted:#6E6E73; --muted-2:#9A9A9F;
+    --bg:#F5F5F2; --surface:#FFFFFF; --surface-2:#FAFAF8;
+    --line:#E3E3DE; --line-2:#EFEFEB; --fill:#F2F2EE; --fill-off:#D8D8D2;
+    --alert:#C0392B; --alert-tint:#FDECE9; --ok:#4ADE80;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none} a:hover{color:#1210B8}
+  main{padding:32px;display:flex;flex-direction:column;gap:30px}
+  h1{font-family:var(--display);font-size:24px;letter-spacing:-0.015em;margin:0}
+  .sub{font-size:13px;color:var(--muted);margin:7px 0 0;line-height:1.5;max-width:62ch;text-wrap:pretty}
+  section{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;max-width:62ch;text-wrap:pretty}
+  .surf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .var{display:flex;flex-direction:column;gap:7px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--fill);padding:1px 5px;border-radius:4px}
+
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Волна-разделитель</h1>
+    <p class="sub">Взята с ginasgymnastics.com — это то, по чему приложение опознаётся как часть того же бренда.</p>
+  </header>
+  <section>
+    <div class="lbl">Шапка родительского экрана</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="width:390px">
+        <div style="background:var(--blue);height:90px;position:relative;border-radius:12px 12px 0 0">
+          <svg viewBox="0 0 390 26" preserveAspectRatio="none" style="display:block;width:100%;height:26px;position:absolute;left:0;bottom:-1px"><path d="M0 14C60 0 120 0 195 9s135 17 195 3v14H0z" fill="#F5F5F2"/></svg>
+        </div>
+        <div style="background:var(--bg);height:50px;border-radius:0 0 12px 12px"></div>
+      </div>
+        <div class="cap">высота 26–30 px · заливка = цвет следующей секции</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Правило</div>
+    <div class="row">
+      <div class="note">Фирменный элемент сайта. Абсолютно позиционированный SVG на нижней кромке цветной секции, <code>preserveAspectRatio="none"</code>, <code>bottom: -1px</code> чтобы не оставалось щели субпиксельного рендера. Заливка — цвет <strong>следующей</strong> секции, не текущей. В консоли оператора не используется: там она мешает плотной сетке.</div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
