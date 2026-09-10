@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Badge, Button, Input, WaveDivider } from 'gina-ride-tracker-ds';
+import { Badge, Button, Icon, Input, WaveDivider } from 'gina-ride-tracker-ds';
 import { ApiError, login } from '../api/client';
 
 type Props = {
@@ -10,6 +10,7 @@ type Props = {
 export default function Login({ onSignedIn }: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -35,25 +36,15 @@ export default function Login({ onSignedIn }: Props) {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <header
-        style={{
-          position: 'relative',
-          background: 'var(--blue)',
-          color: '#FFF',
-          padding: '28px 20px 44px',
-        }}
-      >
-        <div
-          style={{
-            fontSize: 11,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            fontWeight: 700,
-            opacity: 0.75,
-          }}
-        >
-          Gina's Gymnastics
+      <header style={{ position: 'relative', background: 'var(--blue)', color: '#FFF', padding: '40px 24px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Grid-restricted to 24px per the icon rule in DESIGN-SYSTEM.md; the artboard draws it at 34px. */}
+          <Icon name="logo" size={24} />
+          <span style={{ fontFamily: 'var(--display)', fontSize: 13, letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+            Gina's Gymnastics
+          </span>
         </div>
+
         <h1
           style={{
             fontFamily: 'var(--display)',
@@ -61,7 +52,7 @@ export default function Login({ onSignedIn }: Props) {
             lineHeight: 0.98,
             letterSpacing: '-0.03em',
             textTransform: 'uppercase',
-            margin: '14px 0 0',
+            margin: '26px 0 12px',
             textWrap: 'pretty',
           }}
         >
@@ -69,13 +60,13 @@ export default function Login({ onSignedIn }: Props) {
           <br />
           she's there
         </h1>
-        <p style={{ fontSize: 14, lineHeight: 1.5, opacity: 0.9, margin: '12px 0 0', maxWidth: '32ch' }}>
+        <p style={{ fontSize: 15, lineHeight: 1.45, opacity: 0.9, margin: 0, paddingBottom: 34 }}>
           Live van tracking and arrival texts for families riding with us.
         </p>
-        <WaveDivider fill="var(--bg)" />
+        <WaveDivider fill="var(--bg)" height={30} />
       </header>
 
-      <main style={{ flex: 1, padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <main style={{ flex: 1, padding: '22px 24px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
         <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
@@ -95,14 +86,28 @@ export default function Login({ onSignedIn }: Props) {
             <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
               Password
             </span>
-            <Input
-              variant="mobile"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            {/* The Input component only places a leading icon; the artboard's eye
+                sits trailing and has to toggle, so this field is composed by hand
+                from the same .gds-field classes Input itself renders. */}
+            <div className="gds-field gds-field--mobile">
+              <input
+                className="gds-field__input"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+                style={{ display: 'flex', flexShrink: 0, background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--muted)' }}
+              >
+                <Icon name="eye" size={20} />
+              </button>
+            </div>
           </label>
 
           {error ? (
@@ -125,22 +130,22 @@ export default function Login({ onSignedIn }: Props) {
             background: 'var(--surface)',
             border: '1px solid var(--line)',
             borderRadius: 'var(--r-card-mobile)',
-            padding: 18,
+            padding: '16px 18px',
             display: 'flex',
             flexDirection: 'column',
-            gap: 8,
+            gap: 4,
           }}
         >
-          <div style={{ fontSize: 14, fontWeight: 700 }}>Accounts are set up by the gym</div>
-          <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5, margin: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.35 }}>Accounts are set up by the gym</div>
+          <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.45, margin: 0 }}>
             When your child is enrolled for van rides, we text you an invite link to pick a password.
           </p>
         </div>
 
-        <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
+        <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>
           Questions? Call the front desk
           <br />
-          <a href="tel:+13054564150" style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+          <a href="tel:+13054564150" style={{ fontWeight: 600, color: 'var(--ink)', textDecoration: 'none', fontVariantNumeric: 'tabular-nums' }}>
             1 (305) 456-4150
           </a>
         </div>
