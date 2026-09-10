@@ -1,0 +1,9 @@
+
+# design-sync
+.ds-sync/
+ds-bundle/
+node_modules/
+dist/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules

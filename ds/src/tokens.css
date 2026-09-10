@@ -1,0 +1,48 @@
+/* Gina's Ride Tracker — design tokens.
+   Values are taken verbatim from design/DESIGN-SYSTEM.md. Token names match the
+   ones already used across design/library/*.html, so markup moves over unchanged. */
+
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap");
+
+:root {
+  /* Accent */
+  --blue: #1A18F0;
+  --blue-tint: #E9E9FE;
+  --blue-surface: #F7F7FF;
+  --blue-row: #F3F3FE;
+
+  /* Text */
+  --ink: #17171A;
+  --ink-2: #3D3D42;
+  --muted: #6E6E73;      /* the only grey allowed for text — 5.07:1 on --surface */
+  --muted-2: #9A9A9F;    /* non-text only — 2.80:1 on white, below AA */
+
+  /* Surface */
+  --bg: #F5F5F2;
+  --surface: #FFFFFF;
+  --surface-2: #FAFAF8;
+
+  /* Line */
+  --line: #E3E3DE;
+  --line-2: #EFEFEB;
+  --fill: #F2F2EE;
+  --fill-off: #D8D8D2;
+
+  /* State */
+  --alert: #C0392B;      /* action required only — never decorative */
+  --alert-tint: #FDECE9;
+  --ok: #4ADE80;
+
+  /* Type */
+  --display: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --body: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Radius — from the "Форма и ритм" table */
+  --r-pill: 999px;
+  --r-card-mobile: 16px;
+  --r-card: 14px;
+  --r-field: 12px;
+  --r-row: 10px;
+  --r-chip: 8px;
+  --r-chip-table: 6px;
+}

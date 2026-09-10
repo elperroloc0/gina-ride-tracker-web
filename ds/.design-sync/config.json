@@ -1,0 +1,42 @@
+{
+  "pkg": "gina-ride-tracker-ds",
+  "globalName": "GinaDS",
+  "projectId": "c5d54746-e461-4bcc-9187-5201b9536dcd",
+  "shape": "package",
+  "buildCmd": "npm run build",
+  "cssEntry": "dist/styles.css",
+  "docsDir": "docs",
+  "overrides": {
+    "Table": {
+      "cardMode": "column"
+    },
+    "TableHeader": {
+      "cardMode": "column"
+    },
+    "TableRow": {
+      "cardMode": "column"
+    },
+    "TableCell": {
+      "cardMode": "column"
+    },
+    "Toggle": {
+      "cardMode": "column"
+    },
+    "Icon": {
+      "cardMode": "column"
+    },
+    "WaveDivider": {
+      "cardMode": "column"
+    },
+    "Timeline": {
+      "cardMode": "column"
+    },
+    "Card": {
+      "cardMode": "column"
+    }
+  },
+  "guidelinesGlob": [
+    "../DESIGN-SYSTEM.md"
+  ],
+  "readmeHeader": ".design-sync/conventions.md"
+}
