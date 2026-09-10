@@ -7,10 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "cd design/ds && npm install --no-audit --no-fund && npm run build"
   },
   "dependencies": {
-    "gina-ride-tracker-ds": "file:../GinaGymnastics/design/ds",
+    "gina-ride-tracker-ds": "file:./design/ds",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
