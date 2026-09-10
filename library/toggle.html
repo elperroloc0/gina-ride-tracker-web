@@ -1,0 +1,75 @@
+<!-- @dsCard name="Toggle" group="Controls" subtitle="Два размера, оба состояния" width="1080" height="500" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toggle — Gina's Ride Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+<style>
+  :root{
+    --blue:#1A18F0; --blue-tint:#E9E9FE; --blue-surface:#F7F7FF; --blue-row:#F3F3FE;
+    --ink:#17171A; --ink-2:#3D3D42; --muted:#6E6E73; --muted-2:#9A9A9F;
+    --bg:#F5F5F2; --surface:#FFFFFF; --surface-2:#FAFAF8;
+    --line:#E3E3DE; --line-2:#EFEFEB; --fill:#F2F2EE; --fill-off:#D8D8D2;
+    --alert:#C0392B; --alert-tint:#FDECE9; --ok:#4ADE80;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none} a:hover{color:#1210B8}
+  main{padding:32px;display:flex;flex-direction:column;gap:30px}
+  h1{font-family:var(--display);font-size:24px;letter-spacing:-0.015em;margin:0}
+  .sub{font-size:13px;color:var(--muted);margin:7px 0 0;line-height:1.5;max-width:62ch;text-wrap:pretty}
+  section{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;max-width:62ch;text-wrap:pretty}
+  .surf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .var{display:flex;flex-direction:column;gap:7px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--fill);padding:1px 5px;border-radius:4px}
+
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Тумблер</h1>
+    <p class="sub">Выключенное состояние — <code>--fill-off</code>, не серый текст: тумблер это графика, ему нужен контраст 3:1, а не 4.5:1. Там, где выключение что-то отключает у пользователя, рядом стоит строка последствия.</p>
+  </header>
+  <section>
+    <div class="lbl">В списке — 34×20</div>
+    <div class="row" style='align-items:flex-start;gap:28px'>
+      <div class="var"><span style="width:34px;height:20px;border-radius:999px;background:var(--blue);display:inline-flex;align-items:center;justify-content:flex-end;padding:0 3px;flex-shrink:0"><span style="width:14px;height:14px;border-radius:999px;background:#FFF;display:block"></span></span>
+        <div class="cap">включён</div>
+      </div>
+      <div class="var"><span style="width:34px;height:20px;border-radius:999px;background:var(--fill-off);display:inline-flex;align-items:center;justify-content:flex-start;padding:0 3px;flex-shrink:0"><span style="width:14px;height:14px;border-radius:999px;background:#FFF;display:block"></span></span>
+        <div class="cap">выключен · --fill-off</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">В форме — 40×23</div>
+    <div class="row" style='align-items:flex-start;gap:28px'>
+      <div class="var"><span style="width:40px;height:23px;border-radius:999px;background:var(--blue);display:inline-flex;align-items:center;justify-content:flex-end;padding:0 3px;flex-shrink:0"><span style="width:17px;height:17px;border-radius:999px;background:#FFF;display:block"></span></span>
+        <div class="cap">включён</div>
+      </div>
+      <div class="var"><span style="width:40px;height:23px;border-radius:999px;background:var(--fill-off);display:inline-flex;align-items:center;justify-content:flex-start;padding:0 3px;flex-shrink:0"><span style="width:17px;height:17px;border-radius:999px;background:#FFF;display:block"></span></span>
+        <div class="cap">выключен</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">С объяснением последствия</div>
+    <div class="row">
+      <div class="var"><div style="width:400px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:12px 13px"><div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:13px;font-weight:600">Zone is active</div><div style="font-size:12px;color:var(--muted)">Off = no events, no texts</div></div><span style="width:40px;height:23px;border-radius:999px;background:var(--blue);display:inline-flex;align-items:center;justify-content:flex-end;padding:0 3px;flex-shrink:0"><span style="width:17px;height:17px;border-radius:999px;background:#FFF;display:block"></span></span></div>
+        <div class="cap">Тумблер, отключающий уведомления, всегда объясняет последствие</div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

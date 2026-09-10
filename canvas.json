@@ -1,17 +1,79 @@
 {
   "artboards": [
-    { "file": "Main.dc.html",        "x": 0,    "y": 0,    "w": 1440, "h": 900 },
-    { "file": "Children.dc.html",    "x": 1560, "y": 0,    "w": 1440, "h": 900 },
-    { "file": "Routes.dc.html",      "x": 3120, "y": 0,    "w": 1440, "h": 900 },
-    { "file": "ParentLive.dc.html",  "x": 0,    "y": 1160, "w": 390,  "h": 844 },
-    { "file": "ParentStale.dc.html", "x": 510,  "y": 1160, "w": 390,  "h": 844 },
-    { "file": "ParentIdle.dc.html",  "x": 1020, "y": 1160, "w": 390,  "h": 844 },
-    { "file": "ParentLogin.dc.html", "x": 1530, "y": 1160, "w": 390,  "h": 844 }
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    {
+      "file": "Children.dc.html",
+      "x": 1560,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    {
+      "file": "Routes.dc.html",
+      "x": 3120,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    {
+      "file": "ParentLive.dc.html",
+      "x": 0,
+      "y": 1160,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "ParentStale.dc.html",
+      "x": 510,
+      "y": 1160,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "ParentIdle.dc.html",
+      "x": 1020,
+      "y": 1160,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "ParentLogin.dc.html",
+      "x": 1530,
+      "y": 1160,
+      "w": 390,
+      "h": 844
+    }
   ],
   "annotations": [
-    { "id": "operator-row", "x": 0, "y": -130, "w": 520, "text": "OPERATOR CONSOLE — desktop 1440x900\nLive map, children & schedule, routes & geofences." },
-    { "id": "parent-row", "x": 0, "y": 1010, "w": 640, "text": "PARENT APP — mobile 390x844\nActive ride, lost signal, quiet state, sign-in.\n\nParentLive and ParentStale are the same moment of the same ride. Without the second one a dead feed looks identical to a healthy one." },
-    { "id": "sample-data", "x": 2130, "y": 1160, "w": 460, "text": "Names, schools, phone numbers, IMEI and coordinates are sample values — replace with real data before this goes in front of the client.\n\nThe only real facts here: the gym's address and front-desk number from the website." }
+    {
+      "id": "operator-row",
+      "x": 0,
+      "y": -130,
+      "w": 520,
+      "text": "OPERATOR CONSOLE — desktop 1440x900\nLive map, children & schedule, routes & geofences."
+    },
+    {
+      "id": "parent-row",
+      "x": 0,
+      "y": 1010,
+      "w": 640,
+      "text": "PARENT APP — mobile 390x844\nActive ride, lost signal, quiet state, sign-in.\n\nParentLive and ParentStale are the same moment of the same ride. Without the second one a dead feed looks identical to a healthy one."
+    },
+    {
+      "id": "sample-data",
+      "x": 2130,
+      "y": 1160,
+      "w": 460,
+      "text": "Names, schools, phone numbers, IMEI and coordinates are sample values — replace with real data before this goes in front of the client.\n\nThe only real facts here: the gym's address and front-desk number from the website."
+    }
   ],
-  "launch": { "view": "canvas" }
+  "launch": {
+    "view": "canvas"
+  }
 }

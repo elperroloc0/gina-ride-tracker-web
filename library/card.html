@@ -1,0 +1,70 @@
+<!-- @dsCard name="Cards & surfaces" group="Surfaces" subtitle="Консольная, мобильная, цветная — и правило вложенности" width="1080" height="620" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cards & surfaces — Gina's Ride Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap">
+<style>
+  :root{
+    --blue:#1A18F0; --blue-tint:#E9E9FE; --blue-surface:#F7F7FF; --blue-row:#F3F3FE;
+    --ink:#17171A; --ink-2:#3D3D42; --muted:#6E6E73; --muted-2:#9A9A9F;
+    --bg:#F5F5F2; --surface:#FFFFFF; --surface-2:#FAFAF8;
+    --line:#E3E3DE; --line-2:#EFEFEB; --fill:#F2F2EE; --fill-off:#D8D8D2;
+    --alert:#C0392B; --alert-tint:#FDECE9; --ok:#4ADE80;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none} a:hover{color:#1210B8}
+  main{padding:32px;display:flex;flex-direction:column;gap:30px}
+  h1{font-family:var(--display);font-size:24px;letter-spacing:-0.015em;margin:0}
+  .sub{font-size:13px;color:var(--muted);margin:7px 0 0;line-height:1.5;max-width:62ch;text-wrap:pretty}
+  section{display:flex;flex-direction:column;gap:13px}
+  .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;max-width:62ch;text-wrap:pretty}
+  .surf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .var{display:flex;flex-direction:column;gap:7px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--fill);padding:1px 5px;border-radius:4px}
+
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Карточки</h1>
+    <p class="sub">Радиус кодирует платформу: <code>14px</code> в консоли, <code>16px</code> в мобильном. Цветная карточка означает «этот экран сейчас про это» и забирает себе тему — список под ней показывает только то, чего в ней нет.</p>
+  </header>
+  <section>
+    <div class="lbl">Поверхности</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="width:290px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:12px">Later today &middot; Wednesday</div><div style="display:flex;align-items:center;gap:12px"><div style="width:66px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums">4:15 PM</div><div style="flex-grow:1"><div style="font-size:13px;font-weight:600">Sunset Park Elementary</div><div style="font-size:12px;color:var(--muted);margin-top:2px">4 children &middot; VAN-1</div></div></div></div>
+        <div class="cap">консоль · r14 · padding 16–20</div>
+      </div>
+      <div class="var"><div style="width:290px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px"><div style="font-size:14px;font-weight:700">VAN-1 &middot; FL 8842 KM</div><div style="font-size:13px;color:var(--muted);margin-top:2px">Tracking ends at drop-off</div></div>
+        <div class="cap">мобильный · r16 · padding 16–18</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Цветная карточка — владеет темой экрана</div>
+    <div class="row" style='align-items:flex-start'>
+      <div class="var"><div style="width:380px;background:var(--blue);border-radius:14px;padding:20px;color:#FFF"><div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;opacity:0.75">Ride in progress</div><div style="font-size:12px;font-weight:600;background:rgba(255,255,255,0.18);padding:4px 10px;border-radius:999px">started 3:12 PM</div></div><div style="font-family:var(--display);font-size:27px;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;margin:12px 0 4px">Coral&nbsp;Way K-8 &rarr; The&nbsp;Gym</div><div style="font-size:13px;opacity:0.85">6 children on this window &middot; 6 parents texted</div></div>
+        <div class="cap">--blue · заголовок Archivo Black 27 uppercase</div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="lbl">Правило вложенности</div>
+    <div class="row">
+      <div class="note">Внутри карточки не ставится вторая рамка того же токена. Caps-метка плюс <code>gap</code> уже группируют содержимое; рамка добавляется только тому, с чем можно взаимодействовать — строке с карандашом, полю ввода. Три уровня <code>--line</code> подряд означают, что средний не нужен.</div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
