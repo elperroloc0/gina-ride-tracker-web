@@ -12,7 +12,7 @@ type ConnectOptions = {
    * Close codes from tracking/consumers.py: 4001 = anonymous, 4002 = missing
    * or invalid child, 4003 = ride not active. All three are expected "no"
    * answers, not errors - anything else (a clean 1000 on ride_ended, a 1006
-   * network drop, etc.) is treated as reconnect-worthy.
+   * network drop, etc.) is also treated as reconnect-worthy.
    */
   onClose: (code: number) => void;
   onError?: (err: unknown) => void;
@@ -21,13 +21,21 @@ type ConnectOptions = {
 export type VanSocketHandle = { close: () => void };
 
 const RECONNECT_DELAYS_MS = [1000, 2000, 5000, 10000];
-const NO_RETRY_CODES = new Set([4001, 4002, 4003]);
+// 4001 (anonymous) and 4002 (missing/invalid child) describe this connection
+// attempt itself and won't change by waiting. 4003 (ride not active) is
+// different - it is exactly the state a parent's tab sits in for as long as
+// they have the app open before pickup, and it is expected to flip to
+// accepted the moment the van reaches the school - so it must keep retrying,
+// or a parent who opened the app early would never see the map open on its
+// own the way ParentIdle's own copy promises.
+const NO_RETRY_CODES = new Set([4001, 4002]);
 
 /**
  * Connects to ws/van/, authenticated by a one-time, 30-second ticket fetched
  * fresh immediately before every attempt - tickets are never cached or
  * reused across reconnects, matching their server-side lifetime exactly.
- * Reconnects with backoff on any close the server didn't mean as a real "no".
+ * Reconnects with backoff on any close the server didn't mean as a permanent
+ * "no" - including 4003, which keeps retrying since it's temporary by nature.
  */
 export function connectVanSocket(opts: ConnectOptions): VanSocketHandle {
   let closed = false;

@@ -80,7 +80,7 @@ describe('connectVanSocket', () => {
     expect(onPosition).toHaveBeenCalledWith(position);
   });
 
-  it.each([4001, 4002, 4003])('does not reconnect after close code %d', async (code) => {
+  it.each([4001, 4002])('does not reconnect after close code %d (a permanent no)', async (code) => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ ticket: 't' }) })),
@@ -95,7 +95,7 @@ describe('connectVanSocket', () => {
     expect(MockWebSocket.instances).toHaveLength(1);
   });
 
-  it('reconnects with backoff after an unexpected close', async () => {
+  it.each([1006, 4003])('reconnects with backoff after close code %d', async (code) => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ ticket: 't' }) })),
@@ -105,7 +105,7 @@ describe('connectVanSocket', () => {
     await flushMicrotasks();
     expect(MockWebSocket.instances).toHaveLength(1);
 
-    MockWebSocket.instances[0].onclose?.({ code: 1006 });
+    MockWebSocket.instances[0].onclose?.({ code });
     await vi.advanceTimersByTimeAsync(1000);
     await flushMicrotasks();
 

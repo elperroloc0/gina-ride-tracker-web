@@ -1,0 +1,7 @@
+node_modules
+design/ds/node_modules
+dist
+design/ds/dist
+.git
+.env.local
+*.log
