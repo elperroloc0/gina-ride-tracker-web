@@ -1,10 +1,38 @@
-import { getAccess, saveTokens, type Tokens } from '../auth/tokens';
+import { clearTokens, getAccess, getRefresh, saveTokens, type Tokens } from '../auth/tokens';
+import type { ArrivalEventDTO, ChildDTO, GeoFenceDTO, RouteDTO, VanDTO } from './types';
 
 /** Raised for any non-2xx response, carrying the status so callers can branch. */
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  // Not a constructor parameter property: erasableSyntaxOnly (tsconfig.app.json)
+  // forbids that shorthand since it emits real assignment, not just erasable types.
+  status: number;
+
+  constructor(status: number, message: string) {
     super(message);
+    this.status = status;
   }
+}
+
+/**
+ * Exchanges the stored refresh token for a new access token. Returns null
+ * (rather than throwing) on any failure - the refresh token itself can be
+ * expired or already revoked, and that's an expected outcome, not an error
+ * a caller needs a stack trace for.
+ */
+async function refreshAccess(): Promise<string | null> {
+  const refresh = getRefresh();
+  if (!refresh) return null;
+
+  const res = await fetch('/api/token/refresh/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh }),
+  });
+  if (!res.ok) return null;
+
+  const { access } = (await res.json()) as { access: string };
+  saveTokens({ access, refresh });
+  return access;
 }
 
 /**
@@ -12,7 +40,7 @@ export class ApiError extends Error {
  * in dev, Caddy in production), so there is no base URL to configure per
  * environment and no environment where it can be configured wrong.
  */
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function request<T>(path: string, init: RequestInit = {}, isRetry = false): Promise<T> {
   const access = getAccess();
 
   const res = await fetch(path, {
@@ -23,6 +51,19 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
       ...init.headers,
     },
   });
+
+  if (res.status === 401 && access && !isRetry) {
+    // The 5-minute access token most likely just expired mid-session (e.g. a
+    // parent idle on ParentIdle past that window) - one silent refresh-and-
+    // retry covers that without forcing a full re-login. If the refresh
+    // token is also dead, clear everything so the app falls back to Login
+    // instead of quietly failing every request for the rest of the session.
+    const newAccess = await refreshAccess();
+    if (newAccess) {
+      return request<T>(path, init, true);
+    }
+    clearTokens();
+  }
 
   if (!res.ok) {
     throw new ApiError(res.status, `${init.method ?? 'GET'} ${path} → ${res.status}`);
@@ -44,3 +85,18 @@ export async function login(username: string, password: string): Promise<Tokens>
   saveTokens(tokens);
   return tokens;
 }
+
+/** One-time, 30-second ticket that authenticates a ws/van/ connection - see src/ws/vanSocket.ts. */
+export const requestWsTicket = () => request<{ ticket: string }>('/api/ws-ticket/', { method: 'POST' });
+
+// A parent's GET only ever returns their own children (scoped server-side in
+// ChildViewSet.get_queryset()); an operator's GET returns everyone's.
+export const getChildren = () => request<ChildDTO[]>('/api/children/');
+export const getRoute = (id: number) => request<RouteDTO>(`/api/routes/${id}/`);
+export const getGeoFence = (id: number) => request<GeoFenceDTO>(`/api/geofences/${id}/`);
+export const getRoutes = () => request<RouteDTO[]>('/api/routes/');
+export const getGeoFences = () => request<GeoFenceDTO[]>('/api/geofences/');
+export const getVans = () => request<VanDTO[]>('/api/vans/');
+
+/** Operator-facing roster/history read - role-scoped server-side, same as getChildren(). */
+export const getArrivalEvents = () => request<ArrivalEventDTO[]>('/api/events/');
