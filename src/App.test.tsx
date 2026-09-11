@@ -10,6 +10,23 @@ function fakeAccessToken(payload: Record<string, unknown>): string {
   return `${header}.${body}.unsigned`;
 }
 
+// Both shells fetch on mount (ParentApp's children list; the operator
+// console's VanMap fetches vans and opens a van socket). A real fetch() in
+// jsdom can't resolve our relative URLs at all, and a real WebSocket would
+// attempt a live network connection - both are stubbed out inert, since
+// these tests only assert on the shell that renders, not on fetched data.
+class InertWebSocket {
+  onopen: (() => void) | null = null;
+  onclose: ((ev: { code: number }) => void) | null = null;
+  onmessage: ((ev: { data: string }) => void) | null = null;
+  onerror: ((err: unknown) => void) | null = null;
+  url: string;
+  constructor(url: string) {
+    this.url = url;
+  }
+  close() {}
+}
+
 afterEach(() => {
   clearTokens();
   vi.unstubAllGlobals();
@@ -17,9 +34,12 @@ afterEach(() => {
 
 describe('App', () => {
   it('renders the operator console for an operator token', () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => [] })));
+    vi.stubGlobal('WebSocket', InertWebSocket);
     saveTokens({ access: fakeAccessToken({ role: 'OPERATOR', is_superuser: false }), refresh: 'r' });
     render(<App />);
-    expect(screen.getByText(/console/i)).toBeInTheDocument();
+    // The nav rail is the reliable, stable marker of the operator shell.
+    expect(screen.getByLabelText('Live map')).toBeInTheDocument();
   });
 
   it('renders the parent app for a parent token', () => {

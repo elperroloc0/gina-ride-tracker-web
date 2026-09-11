@@ -6,6 +6,8 @@ type ConnectOptions = {
   /** Omit for the operator (all-vans) socket; required for a parent socket. */
   childId?: number;
   onPosition: (p: VanPosition) => void;
+  /** Fires when the socket actually opens - the operator console's "tracker online" signal. */
+  onOpen?: () => void;
   /**
    * Close codes from tracking/consumers.py: 4001 = anonymous, 4002 = missing
    * or invalid child, 4003 = ride not active. All three are expected "no"
@@ -53,6 +55,7 @@ export function connectVanSocket(opts: ConnectOptions): VanSocketHandle {
 
     socket.onopen = () => {
       attempt = 0;
+      opts.onOpen?.();
     };
     socket.onmessage = (ev) => {
       try {

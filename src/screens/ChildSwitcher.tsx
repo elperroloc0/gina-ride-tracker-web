@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { Avatar, Icon } from 'gina-ride-tracker-ds';
 import type { ChildDTO } from '../api/types';
-
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase();
-}
+import { initialsOf } from '../domain/initials';
 
 type Props = {
   kids: ChildDTO[];
