@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { clearTokens, saveTokens } from './auth/tokens';
 
@@ -12,6 +12,7 @@ function fakeAccessToken(payload: Record<string, unknown>): string {
 
 afterEach(() => {
   clearTokens();
+  vi.unstubAllGlobals();
 });
 
 describe('App', () => {
@@ -22,6 +23,11 @@ describe('App', () => {
   });
 
   it('renders the parent app for a parent token', () => {
+    // ParentApp fetches its children list on mount.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({ ok: true, status: 200, json: async () => [] })),
+    );
     saveTokens({ access: fakeAccessToken({ role: 'PARENT', is_superuser: false }), refresh: 'r' });
     render(<App />);
     // ParentApp's floating nav is the reliable, stable marker of the parent shell.
