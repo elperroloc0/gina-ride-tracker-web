@@ -70,14 +70,14 @@
       "x": 0,
       "y": -130,
       "w": 520,
-      "text": "OPERATOR CONSOLE — desktop 1440x900\nLive map, children & schedule, routes & geofences."
+      "text": "OPERATOR CONSOLE — desktop 1440x900\nMain/Children/Routes are the same map-first shell as Console below, each opened to its own tab by default — kept as separate pages for reference, Console is the real interactive one."
     },
     {
       "id": "console-row",
       "x": -657,
       "y": 2135,
       "w": 620,
-      "text": "CONSOLE V3 — desktop 1440x900, interactive\nMap is the full-bleed base layer (persists across all three sections). A slim icon-only rail floats left (Live map / Children / Routes & zones, max 3), a white content panel floats right next to it — both cards over the map, no opaque columns. Children is a scrollable list, no table. Click a rail icon to switch.\n\nMain/Children/Routes above are kept for comparison, not superseded yet."
+      "text": "CONSOLE V3 — desktop 1440x900, interactive\nMap is the full-bleed base layer (persists across all three sections). A slim icon-only rail floats left (Live map / Children / Routes & zones, max 3), a white content panel floats right next to it — both cards over the map, no opaque columns. Children is a scrollable list, no table. Click a rail icon to switch.\n\nThis is the canonical version — do not edit the other three from here without also checking here."
     },
     {
       "id": "login-desktop-row",
