@@ -15,11 +15,11 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
   },
   server: {
-    // In production Caddy serves this app and proxies /api and /ws to Django,
-    // so the browser only ever talks to one origin. The dev server mirrors that
-    // exactly. The alternative - pointing fetch at http://localhost:8000 - would
-    // make dev cross-origin and force CORS headers onto the backend that exist
-    // for development only, and that production would never exercise.
+    // Local dev stays same-origin by proxying /api and /ws to Django, so no
+    // VITE_API_URL is needed here and CORS never has to fire in dev. Production
+    // now deploys this app separately (Vercel) from the API (VPS), so prod
+    // builds do set VITE_API_URL - see src/api/apiBase.ts - and the backend
+    // allows that origin via CORS_ALLOWED_ORIGINS.
     proxy: {
       '/api': { target: 'http://127.0.0.1:8000', changeOrigin: true },
       '/ws': { target: 'ws://127.0.0.1:8000', ws: true },

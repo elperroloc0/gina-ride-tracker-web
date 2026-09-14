@@ -1,3 +1,4 @@
+import { apiBase } from './apiBase';
 import { clearTokens, getAccess, getRefresh, saveTokens, type Tokens } from '../auth/tokens';
 import type {
   ArrivalEventDTO,
@@ -32,7 +33,7 @@ async function refreshAccess(): Promise<string | null> {
   const refresh = getRefresh();
   if (!refresh) return null;
 
-  const res = await fetch('/api/token/refresh/', {
+  const res = await fetch(`${apiBase}/api/token/refresh/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh }),
@@ -44,15 +45,10 @@ async function refreshAccess(): Promise<string | null> {
   return access;
 }
 
-/**
- * Relative URLs on purpose - the app and the API share an origin (Vite proxies
- * in dev, Caddy in production), so there is no base URL to configure per
- * environment and no environment where it can be configured wrong.
- */
 async function request<T>(path: string, init: RequestInit = {}, isRetry = false): Promise<T> {
   const access = getAccess();
 
-  const res = await fetch(path, {
+  const res = await fetch(`${apiBase}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',

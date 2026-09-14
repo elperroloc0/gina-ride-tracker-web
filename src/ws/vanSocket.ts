@@ -1,4 +1,5 @@
 import { requestWsTicket } from '../api/client';
+import { wsBase } from '../api/apiBase';
 
 export type VanPosition = { van_id: number; lat: number; lon: number; device_time: string };
 
@@ -56,10 +57,9 @@ export function connectVanSocket(opts: ConnectOptions): VanSocketHandle {
     }
     if (closed) return;
 
-    const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const params = new URLSearchParams({ ticket });
     if (opts.childId != null) params.set('child_id', String(opts.childId));
-    socket = new WebSocket(`${proto}//${window.location.host}/ws/van/?${params}`);
+    socket = new WebSocket(`${wsBase}/ws/van/?${params}`);
 
     socket.onopen = () => {
       attempt = 0;
