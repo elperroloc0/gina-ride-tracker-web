@@ -1,5 +1,14 @@
 import { clearTokens, getAccess, getRefresh, saveTokens, type Tokens } from '../auth/tokens';
-import type { ArrivalEventDTO, ChildDTO, GeoFenceDTO, RouteDTO, VanDTO } from './types';
+import type {
+  ArrivalEventDTO,
+  ChildDTO,
+  EnrollParentRequest,
+  EnrollParentResponse,
+  GeoFenceDTO,
+  RouteDTO,
+  SetPasswordResponse,
+  VanDTO,
+} from './types';
 
 /** Raised for any non-2xx response, carrying the status so callers can branch. */
 export class ApiError extends Error {
@@ -100,3 +109,20 @@ export const getVans = () => request<VanDTO[]>('/api/vans/');
 
 /** Operator-facing roster/history read - role-scoped server-side, same as getChildren(). */
 export const getArrivalEvents = () => request<ArrivalEventDTO[]>('/api/events/');
+
+/**
+ * Operator-only: creates (or reuses) a parent account and enrolls one child
+ * under it. `invited: true` in the response means a set-password link was
+ * just texted; `false` means the phone number already had an account and
+ * this just added another child to it.
+ */
+export const enrollParent = (payload: EnrollParentRequest) =>
+  request<EnrollParentResponse>('/api/enroll-parent/', { method: 'POST', body: JSON.stringify(payload) });
+
+/**
+ * Public - no Authorization header is required (none may even exist yet for
+ * a brand new parent). The token itself, from a texted ParentInvite link, is
+ * the credential.
+ */
+export const setPassword = (token: string, password: string) =>
+  request<SetPasswordResponse>('/api/set-password/', { method: 'POST', body: JSON.stringify({ token, password }) });

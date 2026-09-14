@@ -74,7 +74,6 @@ export default function Login({ onSignedIn }: Props) {
             </span>
             <Input
               variant="mobile"
-              type="email"
               autoComplete="username"
               placeholder="you@example.com"
               value={username}

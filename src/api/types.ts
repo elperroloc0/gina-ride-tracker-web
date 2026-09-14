@@ -52,3 +52,25 @@ export type ArrivalEventDTO = {
   arrival_type: 'in' | 'out';
   time: string;
 };
+
+export type EnrollParentRequest = {
+  parent_phone: string;
+  parent_name: string;
+  child_name: string;
+  route: number;
+  /** ChildSchedule.Weekday values: 0=Monday..6=Sunday. */
+  weekdays: number[];
+  /** "HH:MM:SS" */
+  pickup_hour: string;
+};
+
+export type EnrollParentResponse = {
+  child: ChildDTO;
+  /** False when the phone number already had a parent account - no new invite text was sent. */
+  invited: boolean;
+};
+
+export type SetPasswordResponse = {
+  access: string;
+  refresh: string;
+};

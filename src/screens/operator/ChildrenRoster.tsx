@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Avatar, Table, TableCell, TableHeader, TableRow, Timeline, WeekdayChips } from 'gina-ride-tracker-ds';
+import { Avatar, Icon, Table, TableCell, TableHeader, TableRow, Timeline, WeekdayChips } from 'gina-ride-tracker-ds';
 import { getArrivalEvents, getChildren, getGeoFences, getRoutes } from '../../api/client';
 import type { ArrivalEventDTO, ChildDTO, GeoFenceDTO, RouteDTO } from '../../api/types';
 import { computeNextRide } from '../../domain/schedule';
 import { initialsOf } from '../../domain/initials';
+import { AddParentForm } from './AddParentForm';
 
 function isSameDay(iso: string, now: Date): boolean {
   const d = new Date(iso);
@@ -23,9 +24,14 @@ export function ChildrenRoster() {
   const [geoFences, setGeoFences] = useState<GeoFenceDTO[]>([]);
   const [events, setEvents] = useState<ArrivalEventDTO[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [adding, setAdding] = useState(false);
+
+  function refetchChildren() {
+    getChildren().then(setChildren);
+  }
 
   useEffect(() => {
-    getChildren().then(setChildren);
+    refetchChildren();
     getRoutes().then(setRoutes);
     getGeoFences().then(setGeoFences);
     getArrivalEvents().then(setEvents);
@@ -36,10 +42,44 @@ export function ChildrenRoster() {
   const geoFenceById = useMemo(() => new Map(geoFences.map((g) => [g.id, g])), [geoFences]);
   const selected = children.find((c) => c.id === selectedId) ?? null;
 
+  if (adding) {
+    return (
+      <AddParentForm
+        onCancel={() => setAdding(false)}
+        onDone={() => {
+          setAdding(false);
+          refetchChildren();
+        }}
+      />
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24, height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-      <div style={{ fontFamily: 'var(--display)', fontSize: 24, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
-        Children
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ fontFamily: 'var(--display)', fontSize: 24, letterSpacing: '-0.02em', textTransform: 'uppercase', flexGrow: 1 }}>
+          Children
+        </div>
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          aria-label="Add a family"
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: '999px',
+            border: 'none',
+            cursor: 'pointer',
+            background: 'var(--ink)',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <Icon name="plus" size={16} />
+        </button>
       </div>
 
       {children.length === 0 ? (

@@ -30,9 +30,17 @@ class InertWebSocket {
 afterEach(() => {
   clearTokens();
   vi.unstubAllGlobals();
+  window.history.replaceState(null, '', '/');
 });
 
 describe('App', () => {
+  it('renders SetPassword for a /set-password/:token URL, even with a session already saved', () => {
+    window.history.pushState({}, '', '/set-password/abc123');
+    saveTokens({ access: fakeAccessToken({ role: 'PARENT', is_superuser: false }), refresh: 'r' });
+    render(<App />);
+    expect(screen.getByText(/set your password/i)).toBeInTheDocument();
+  });
+
   it('renders the operator console for an operator token', () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => [] })));
     vi.stubGlobal('WebSocket', InertWebSocket);
