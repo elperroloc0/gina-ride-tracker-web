@@ -48,9 +48,31 @@ export default function ParentApp({ onSignOut }: { onSignOut: () => void }) {
         >
           <Icon name="logo" size={20} />
         </span>
-        {selected ? (
-          <ChildSwitcher kids={children} selectedId={selected.id} onSelect={setSelectedId} />
-        ) : null}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {selected ? <ChildSwitcher kids={children} selectedId={selected.id} onSelect={setSelectedId} /> : null}
+          {/* Always rendered, regardless of tab or whether a child is loaded
+              yet - the one other place this used to live (Schedule.tsx) was
+              only reachable after switching off the default Ride tab. */}
+          <button
+            type="button"
+            onClick={onSignOut}
+            style={{
+              height: 40,
+              padding: '0 14px',
+              borderRadius: '999px',
+              background: 'var(--surface)',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.14)',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--ink)',
+              flexShrink: 0,
+            }}
+          >
+            Sign out
+          </button>
+        </div>
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -58,7 +80,7 @@ export default function ParentApp({ onSignOut }: { onSignOut: () => void }) {
           tab === 'ride' ? (
             <RideTab child={selected} />
           ) : (
-            <ScheduleTab child={selected} onSignOut={onSignOut} />
+            <ScheduleTab child={selected} />
           )
         ) : null}
       </div>
@@ -97,9 +119,9 @@ function RideTab({ child }: { child: ChildDTO }) {
   return <ParentIdle childName={child.name} nextRide={nextRide} origin={origin} destination={destination} />;
 }
 
-function ScheduleTab({ child, onSignOut }: { child: ChildDTO; onSignOut: () => void }) {
+function ScheduleTab({ child }: { child: ChildDTO }) {
   const { origin, destination } = useNextRide(child);
-  return <Schedule child={child} origin={origin} destination={destination} onSignOut={onSignOut} />;
+  return <Schedule child={child} origin={origin} destination={destination} />;
 }
 
 function NavTab({ icon, label, active, onClick }: { icon: 'van' | 'clock'; label: string; active: boolean; onClick: () => void }) {

@@ -1,7 +1,6 @@
 import { Card } from 'gina-ride-tracker-ds';
 import { WeekStrip } from '../components/WeekStrip';
 import type { ChildDTO } from '../api/types';
-import { clearTokens } from '../auth/tokens';
 import { computeNextRide } from '../domain/schedule';
 
 const WEEKDAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -15,7 +14,6 @@ type Props = {
   child: ChildDTO;
   origin?: string;
   destination?: string;
-  onSignOut: () => void;
 };
 
 /**
@@ -24,8 +22,10 @@ type Props = {
  * idioms rather than blocking on a separate design pass, and kept
  * deliberately simple: read-only (IsOperatorOrReadOnly blocks a parent from
  * writing schedules server-side anyway, so there's no form/Toggle here).
+ * Sign-out lives in ParentApp's header now (reachable from every tab, not
+ * just this one) - see ParentApp.tsx.
  */
-export default function Schedule({ child, origin, destination, onSignOut }: Props) {
+export default function Schedule({ child, origin, destination }: Props) {
   const nextRide = computeNextRide(child.schedule, new Date());
   const rows = [...child.schedule].sort((a, b) => a.weekday - b.weekday);
 
@@ -58,17 +58,6 @@ export default function Schedule({ child, origin, destination, onSignOut }: Prop
           ))}
         </div>
       )}
-
-      <button
-        type="button"
-        onClick={() => {
-          clearTokens();
-          onSignOut();
-        }}
-        style={{ background: 'none', border: 'none', color: 'var(--blue)', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0, marginTop: 'auto', alignSelf: 'center' }}
-      >
-        Sign out
-      </button>
     </div>
   );
 }
