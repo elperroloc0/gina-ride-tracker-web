@@ -23,7 +23,7 @@ describe('Login', () => {
     const user = userEvent.setup();
 
     render(<Login onSignedIn={onSignedIn} />);
-    await user.type(screen.getByPlaceholderText('you@example.com'), 'parent@example.com');
+    await user.type(screen.getByPlaceholderText('(305) 555-0100'), '+13055550100');
     await user.type(screen.getByPlaceholderText('••••••••'), 'correct-password');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 
@@ -46,11 +46,11 @@ describe('Login', () => {
     const user = userEvent.setup();
 
     render(<Login onSignedIn={onSignedIn} />);
-    await user.type(screen.getByPlaceholderText('you@example.com'), 'parent@example.com');
+    await user.type(screen.getByPlaceholderText('(305) 555-0100'), '+13055550100');
     await user.type(screen.getByPlaceholderText('••••••••'), 'wrong-password');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 
-    expect(await screen.findByText('That email and password do not match.')).toBeInTheDocument();
+    expect(await screen.findByText('Those details do not match our records.')).toBeInTheDocument();
     expect(onSignedIn).not.toHaveBeenCalled();
     expect(getAccess()).toBeNull();
   });

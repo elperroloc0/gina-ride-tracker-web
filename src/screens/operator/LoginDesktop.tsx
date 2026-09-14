@@ -34,7 +34,7 @@ export default function LoginDesktop({ onSignedIn }: Props) {
     } catch (err) {
       setError(
         err instanceof ApiError && err.status === 401
-          ? 'That email and password do not match.'
+          ? 'Those details do not match our records.'
           : 'Could not reach the gym right now. Try again in a moment.',
       );
     } finally {
@@ -74,13 +74,12 @@ export default function LoginDesktop({ onSignedIn }: Props) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
-                Email
+                Email or phone
               </span>
               <Input
                 variant="console"
-                type="email"
                 autoComplete="username"
-                placeholder="you@example.com"
+                placeholder="(305) 555-0100"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />

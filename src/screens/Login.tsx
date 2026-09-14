@@ -26,7 +26,7 @@ export default function Login({ onSignedIn }: Props) {
       // and saying "wrong password" for a server fault sends them in circles.
       setError(
         err instanceof ApiError && err.status === 401
-          ? 'That email and password do not match.'
+          ? 'Those details do not match our records.'
           : 'Could not reach the gym right now. Try again in a moment.',
       );
     } finally {
@@ -70,12 +70,12 @@ export default function Login({ onSignedIn }: Props) {
         <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
-              Email
+              Email or phone
             </span>
             <Input
               variant="mobile"
               autoComplete="username"
-              placeholder="you@example.com"
+              placeholder="(305) 555-0100"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
