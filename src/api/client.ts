@@ -3,11 +3,20 @@ import { clearTokens, getAccess, getRefresh, saveTokens, type Tokens } from '../
 import type {
   ArrivalEventDTO,
   ChildDTO,
+  ChildScheduleDTO,
+  CreateChildScheduleRequest,
+  CreateGeoFenceRequest,
+  CreateOperatorRequest,
+  CreateRouteRequest,
+  CreateVanRequest,
   EnrollParentRequest,
   EnrollParentResponse,
   GeoFenceDTO,
+  OperatorDTO,
+  ParentDTO,
   RouteDTO,
   SetPasswordResponse,
+  UpdateParentRequest,
   VanDTO,
 } from './types';
 
@@ -16,10 +25,14 @@ export class ApiError extends Error {
   // Not a constructor parameter property: erasableSyntaxOnly (tsconfig.app.json)
   // forbids that shorthand since it emits real assignment, not just erasable types.
   status: number;
+  /** The backend's {"detail": "..."} body, if it sent one (e.g. GeoFenceViewSet's
+   * Traccar-provisioning and ProtectedError messages) - undefined otherwise. */
+  detail?: string;
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, detail?: string) {
     super(message);
     this.status = status;
+    this.detail = detail;
   }
 }
 
@@ -71,7 +84,11 @@ async function request<T>(path: string, init: RequestInit = {}, isRetry = false)
   }
 
   if (!res.ok) {
-    throw new ApiError(res.status, `${init.method ?? 'GET'} ${path} → ${res.status}`);
+    const detail = await res.json().then(
+      (body: { detail?: string }) => body.detail,
+      () => undefined,
+    );
+    throw new ApiError(res.status, `${init.method ?? 'GET'} ${path} → ${res.status}`, detail);
   }
 
   return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
@@ -97,11 +114,49 @@ export const requestWsTicket = () => request<{ ticket: string }>('/api/ws-ticket
 // A parent's GET only ever returns their own children (scoped server-side in
 // ChildViewSet.get_queryset()); an operator's GET returns everyone's.
 export const getChildren = () => request<ChildDTO[]>('/api/children/');
+
+export const createChildSchedule = (payload: CreateChildScheduleRequest) =>
+  request<ChildScheduleDTO>('/api/schedules/', { method: 'POST', body: JSON.stringify(payload) });
+export const updateChildSchedule = (id: number, payload: Partial<CreateChildScheduleRequest>) =>
+  request<ChildScheduleDTO>(`/api/schedules/${id}/`, { method: 'PATCH', body: JSON.stringify(payload) });
+export const deleteChildSchedule = (id: number) => request<void>(`/api/schedules/${id}/`, { method: 'DELETE' });
 export const getRoute = (id: number) => request<RouteDTO>(`/api/routes/${id}/`);
 export const getGeoFence = (id: number) => request<GeoFenceDTO>(`/api/geofences/${id}/`);
 export const getRoutes = () => request<RouteDTO[]>('/api/routes/');
 export const getGeoFences = () => request<GeoFenceDTO[]>('/api/geofences/');
 export const getVans = () => request<VanDTO[]>('/api/vans/');
+
+export const createVan = (payload: CreateVanRequest) =>
+  request<VanDTO>('/api/vans/', { method: 'POST', body: JSON.stringify(payload) });
+export const updateVan = (id: number, payload: Partial<CreateVanRequest>) =>
+  request<VanDTO>(`/api/vans/${id}/`, { method: 'PATCH', body: JSON.stringify(payload) });
+export const deleteVan = (id: number) => request<void>(`/api/vans/${id}/`, { method: 'DELETE' });
+
+export const createGeoFence = (payload: CreateGeoFenceRequest) =>
+  request<GeoFenceDTO>('/api/geofences/', { method: 'POST', body: JSON.stringify(payload) });
+export const updateGeoFence = (id: number, payload: Partial<CreateGeoFenceRequest> & { is_active?: boolean }) =>
+  request<GeoFenceDTO>(`/api/geofences/${id}/`, { method: 'PATCH', body: JSON.stringify(payload) });
+export const deleteGeoFence = (id: number) => request<void>(`/api/geofences/${id}/`, { method: 'DELETE' });
+
+export const createRoute = (payload: CreateRouteRequest) =>
+  request<RouteDTO>('/api/routes/', { method: 'POST', body: JSON.stringify(payload) });
+export const updateRoute = (id: number, payload: Partial<CreateRouteRequest>) =>
+  request<RouteDTO>(`/api/routes/${id}/`, { method: 'PATCH', body: JSON.stringify(payload) });
+export const deleteRoute = (id: number) => request<void>(`/api/routes/${id}/`, { method: 'DELETE' });
+
+export const getOperators = () => request<OperatorDTO[]>('/api/operators/');
+export const createOperator = (payload: CreateOperatorRequest) =>
+  request<OperatorDTO>('/api/operators/', { method: 'POST', body: JSON.stringify(payload) });
+export const deactivateOperator = (id: number) =>
+  request<OperatorDTO>(`/api/operators/${id}/deactivate/`, { method: 'POST' });
+
+export const getParents = () => request<ParentDTO[]>('/api/parents/');
+export const updateParent = (id: number, payload: UpdateParentRequest) =>
+  request<ParentDTO>(`/api/parents/${id}/`, { method: 'PATCH', body: JSON.stringify(payload) });
+export const deactivateParent = (id: number) =>
+  request<ParentDTO>(`/api/parents/${id}/deactivate/`, { method: 'POST' });
+export const resendParentInvite = (id: number) =>
+  request<ParentDTO>(`/api/parents/${id}/resend_invite/`, { method: 'POST' });
 
 /** Operator-facing roster/history read - role-scoped server-side, same as getChildren(). */
 export const getArrivalEvents = () => request<ArrivalEventDTO[]>('/api/events/');

@@ -122,15 +122,15 @@ export function AddParentForm({ onDone, onCancel }: Props) {
       </div>
 
       <Field label="Parent phone">
-        <Input type="tel" icon="phone" placeholder="(305) 555-0100" value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} required />
+        <Input type="tel" icon="phone" value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} required />
       </Field>
 
       <Field label="Parent name">
-        <Input placeholder="Carolina Alvarez" value={parentName} onChange={(e) => setParentName(e.target.value)} />
+        <Input value={parentName} onChange={(e) => setParentName(e.target.value)} />
       </Field>
 
       <Field label="Child name">
-        <Input placeholder="Maya Alvarez" value={childName} onChange={(e) => setChildName(e.target.value)} required />
+        <Input value={childName} onChange={(e) => setChildName(e.target.value)} required />
       </Field>
 
       <Field label="Route">

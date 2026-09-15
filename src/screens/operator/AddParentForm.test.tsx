@@ -36,8 +36,8 @@ describe('AddParentForm', () => {
     await waitFor(() => expect(screen.getByText(/Coral Way K-8 Center/)).toBeInTheDocument());
 
     const user = userEvent.setup();
-    await user.type(screen.getByPlaceholderText('(305) 555-0100'), '3055550100');
-    await user.type(screen.getByPlaceholderText('Maya Alvarez'), 'Maya Alvarez');
+    await user.type(screen.getByLabelText('Parent phone'), '3055550100');
+    await user.type(screen.getByLabelText('Child name'), 'Maya Alvarez');
     await user.click(screen.getByText('M'));
     await user.click(screen.getByText('W'));
     await user.click(screen.getByRole('button', { name: /add family/i }));

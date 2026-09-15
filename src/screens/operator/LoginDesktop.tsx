@@ -79,7 +79,6 @@ export default function LoginDesktop({ onSignedIn }: Props) {
               <Input
                 variant="console"
                 autoComplete="username"
-                placeholder="(305) 555-0100"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -96,7 +95,6 @@ export default function LoginDesktop({ onSignedIn }: Props) {
                   className="gds-field__input"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />

@@ -1,7 +1,14 @@
 import { requestWsTicket } from '../api/client';
 import { wsBase } from '../api/apiBase';
 
-export type VanPosition = { van_id: number; lat: number; lon: number; device_time: string };
+export type VanPosition = {
+  van_id: number;
+  lat: number;
+  lon: number;
+  /** Course over ground in degrees (0=north), null when the tracker didn't report one. */
+  course: number | null;
+  device_time: string;
+};
 
 type ConnectOptions = {
   /** Omit for the operator (all-vans) socket; required for a parent socket. */

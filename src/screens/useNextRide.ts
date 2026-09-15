@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { getGeoFence, getRoute } from '../api/client';
-import type { ChildDTO } from '../api/types';
+import type { ChildDTO, GeoFenceDTO } from '../api/types';
 import { computeNextRide, type NextRide } from '../domain/schedule';
 
 type State = {
   nextRide: NextRide | null;
   origin?: string;
   destination?: string;
+  /** Full geofence objects (coordinates, radius) for map rendering - ParentRide
+   * needs these, ParentIdle/Schedule only ever needed the name strings above. */
+  originFence: GeoFenceDTO | null;
+  destinationFence: GeoFenceDTO | null;
   loading: boolean;
 };
 
@@ -16,7 +20,7 @@ type State = {
  * objects).
  */
 export function useNextRide(child: ChildDTO | undefined): State {
-  const [state, setState] = useState<State>({ nextRide: null, loading: true });
+  const [state, setState] = useState<State>({ nextRide: null, originFence: null, destinationFence: null, loading: true });
 
   useEffect(() => {
     if (!child) return;
@@ -28,7 +32,7 @@ export function useNextRide(child: ChildDTO | undefined): State {
       const route = await getRoute(child.route);
       const [origin, destination] = await Promise.all([getGeoFence(route.origin), getGeoFence(route.destination)]);
       if (!cancelled) {
-        setState({ nextRide, origin: origin.name, destination: destination.name, loading: false });
+        setState({ nextRide, origin: origin.name, destination: destination.name, originFence: origin, destinationFence: destination, loading: false });
       }
     })();
 
