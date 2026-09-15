@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { clearTokens, saveTokens } from './auth/tokens';
@@ -39,6 +40,38 @@ describe('App', () => {
     saveTokens({ access: fakeAccessToken({ role: 'PARENT', is_superuser: false }), refresh: 'r' });
     render(<App />);
     expect(screen.getByText(/set your password/i)).toBeInTheDocument();
+  });
+
+  it('moves on from SetPassword after a successful submit, instead of staying stuck on it', async () => {
+    // Regression: setPasswordToken used to be a plain useState with no
+    // setter, so App kept rendering SetPassword forever after a successful
+    // submit (the `if (setPasswordToken)` branch is checked before `session`
+    // on every render) - a parent would see nothing happen and resubmit,
+    // burning their now-single-use invite token on the second, rejected try.
+    window.history.pushState({}, '', '/set-password/abc123');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        if (url.includes('/api/set-password/')) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ access: fakeAccessToken({ role: 'PARENT', is_superuser: false }), refresh: 'r' }),
+          };
+        }
+        if (url.includes('/api/children/')) return { ok: true, status: 200, json: async () => [] };
+        throw new Error(`unexpected fetch: ${url} ${init?.method}`);
+      }),
+    );
+
+    render(<App />);
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText(/^password$/i), 'a-new-password-123');
+    await user.type(screen.getByLabelText(/confirm password/i), 'a-new-password-123');
+    await user.click(screen.getByRole('button', { name: /set password/i }));
+
+    await waitFor(() => expect(screen.queryByText(/set your password/i)).not.toBeInTheDocument());
+    expect(screen.getByText('Ride')).toBeInTheDocument();
   });
 
   it('renders the operator console for an operator token', () => {

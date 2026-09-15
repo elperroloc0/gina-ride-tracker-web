@@ -47,7 +47,7 @@ function useIsDesktopViewport(): boolean {
 export default function App() {
   // Read once on mount: a token already in storage means a previous session.
   const [session, setSession] = useState<Session>(() => readSession());
-  const [setPasswordToken] = useState(() => readSetPasswordToken());
+  const [setPasswordToken, setSetPasswordToken] = useState(() => readSetPasswordToken());
   const isDesktop = useIsDesktopViewport();
 
   function onSignOut() {
@@ -60,9 +60,13 @@ export default function App() {
       <SetPassword
         token={setPasswordToken}
         onSignedIn={() => {
-          // Drop the token from the URL so a refresh (or back button) can't
-          // re-render this screen against an invite that's now used up.
+          // Drop the token from the URL (so a refresh or back button can't
+          // re-render this screen against an invite that's now used up) and
+          // clear the state driving this branch - otherwise it's stuck
+          // showing SetPassword forever, since `if (setPasswordToken)` above
+          // is checked before `session` on every render regardless of it.
           window.history.replaceState(null, '', '/');
+          setSetPasswordToken(null);
           setSession(readSession());
         }}
       />
