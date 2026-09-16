@@ -41,6 +41,7 @@ export function AddParentForm({ onDone, onCancel }: Props) {
   const [geoFences, setGeoFences] = useState<GeoFenceDTO[]>([]);
   const [parentPhone, setParentPhone] = useState('');
   const [parentName, setParentName] = useState('');
+  const [email, setEmail] = useState('');
   const [childName, setChildName] = useState('');
   const [routeId, setRouteId] = useState<number | null>(null);
   const [weekdays, setWeekdays] = useState<Set<number>>(new Set());
@@ -77,6 +78,7 @@ export function AddParentForm({ onDone, onCancel }: Props) {
       const response = await enrollParent({
         parent_phone: normalizePhone(parentPhone),
         parent_name: parentName,
+        email,
         child_name: childName,
         route: routeId,
         weekdays: [...weekdays],
@@ -127,6 +129,10 @@ export function AddParentForm({ onDone, onCancel }: Props) {
 
       <Field label="Parent name">
         <Input value={parentName} onChange={(e) => setParentName(e.target.value)} />
+      </Field>
+
+      <Field label="Email">
+        <Input type="email" icon="mail" value={email} onChange={(e) => setEmail(e.target.value)} />
       </Field>
 
       <Field label="Child name">

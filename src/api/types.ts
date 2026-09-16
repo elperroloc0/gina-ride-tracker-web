@@ -58,6 +58,7 @@ export type ArrivalEventDTO = {
 export type EnrollParentRequest = {
   parent_phone: string;
   parent_name: string;
+  email: string;
   child_name: string;
   route: number;
   /** ChildSchedule.Weekday values: 0=Monday..6=Sunday. */
