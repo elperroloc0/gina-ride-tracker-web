@@ -52,7 +52,11 @@ describe('App', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: string, init?: RequestInit) => {
-        if (url.includes('/api/set-password/')) {
+        // GET here is InviteInfoView (what the link is for); POST is the actual submit.
+        if (url.includes('/api/set-password/') && (init?.method ?? 'GET') === 'GET') {
+          return { ok: true, status: 200, json: async () => ({ first_name: 'Carolina', phone_number: '+13055550100' }) };
+        }
+        if (url.includes('/api/set-password/') && init?.method === 'POST') {
           return {
             ok: true,
             status: 200,
@@ -65,6 +69,7 @@ describe('App', () => {
     );
 
     render(<App />);
+    await screen.findByText('+13055550100');
     const user = userEvent.setup();
     await user.type(screen.getByLabelText(/^password$/i), 'a-new-password-123');
     await user.type(screen.getByLabelText(/confirm password/i), 'a-new-password-123');

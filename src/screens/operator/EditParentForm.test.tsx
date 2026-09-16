@@ -6,7 +6,7 @@ import type { ParentDTO } from '../../api/types';
 
 const PARENT: ParentDTO = {
   id: 4,
-  username: '+13055550100',
+  username: 'carolina', // name-derived internal handle - never shown in this form
   first_name: 'Carolina',
   email: 'carolina@example.com',
   phone_number: '+13055550100',
@@ -30,8 +30,9 @@ describe('EditParentForm', () => {
     const onDone = vi.fn();
 
     render(<EditParentForm parent={PARENT} onDone={onDone} onCancel={vi.fn()} />);
-    expect(screen.getByText('Login: +13055550100')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Carolina')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('+13055550100')).toBeInTheDocument(); // the Phone field - the actual login
+    expect(screen.queryByText(/username/i)).not.toBeInTheDocument();
 
     const user = userEvent.setup();
     await user.clear(screen.getByLabelText('Name'));

@@ -12,6 +12,7 @@ import type {
   EnrollParentRequest,
   EnrollParentResponse,
   GeoFenceDTO,
+  InviteInfoResponse,
   OperatorDTO,
   ParentDTO,
   RouteDTO,
@@ -177,3 +178,11 @@ export const enrollParent = (payload: EnrollParentRequest) =>
  */
 export const setPassword = (token: string, password: string) =>
   request<SetPasswordResponse>('/api/set-password/', { method: 'POST', body: JSON.stringify({ token, password }) });
+
+/**
+ * Public GET counterpart to setPassword() - who a set-password link is for,
+ * fetched before the parent types anything. Same "invalid or expired" 400
+ * as setPassword() itself if the token is unknown, used, or too old.
+ */
+export const getInviteInfo = (token: string) =>
+  request<InviteInfoResponse>(`/api/set-password/${encodeURIComponent(token)}/`);

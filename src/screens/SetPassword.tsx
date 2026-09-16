@@ -1,12 +1,15 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Badge, Button, Icon } from 'gina-ride-tracker-ds';
-import { ApiError, setPassword } from '../api/client';
+import { ApiError, getInviteInfo, setPassword } from '../api/client';
+import type { InviteInfoResponse } from '../api/types';
 import { saveTokens } from '../auth/tokens';
 
 type Props = {
   token: string;
   onSignedIn: () => void;
 };
+
+const LINK_DEAD_MESSAGE = 'That link has expired or already been used - ask the gym to send a new one.';
 
 /**
  * Where a ParentInvite text link lands (App.tsx routes /set-password/:token
@@ -23,6 +26,29 @@ export default function SetPassword({ token, onSignedIn }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Who this link is for - fetched on mount so the page can show a name and
+  // the phone number the parent needs to remember, before they type anything.
+  // A dead link (expired/already used) is caught here too, not just on
+  // submit - no point showing a password form for a token that can't work.
+  const [inviteInfo, setInviteInfo] = useState<InviteInfoResponse | null>(null);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getInviteInfo(token).then(
+      (info) => {
+        if (!cancelled) setInviteInfo(info);
+      },
+      (err) => {
+        if (cancelled) return;
+        setInviteError(err instanceof ApiError && err.status === 400 ? LINK_DEAD_MESSAGE : 'Could not reach the gym right now. Try again in a moment.');
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (password !== confirm) {
@@ -36,14 +62,22 @@ export default function SetPassword({ token, onSignedIn }: Props) {
       saveTokens(tokens);
       onSignedIn();
     } catch (err) {
-      setError(
-        err instanceof ApiError && err.status === 400
-          ? 'That link has expired or already been used - ask the gym to send a new one.'
-          : 'Could not reach the gym right now. Try again in a moment.',
-      );
+      setError(err instanceof ApiError && err.status === 400 ? LINK_DEAD_MESSAGE : 'Could not reach the gym right now. Try again in a moment.');
     } finally {
       setBusy(false);
     }
+  }
+
+  if (inviteError) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', padding: 24, boxSizing: 'border-box' }}>
+        <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', textAlign: 'center' }}>
+          <Icon name="logo" size={24} />
+          <div style={{ fontFamily: 'var(--display)', fontSize: 22, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>Link no longer works</div>
+          <Badge tone="alert">{inviteError}</Badge>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -62,6 +96,13 @@ export default function SetPassword({ token, onSignedIn }: Props) {
             One more step to start following your ride on Gina&rsquo;s Ride Tracker.
           </p>
         </div>
+
+        {inviteInfo ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '12px 14px', borderRadius: 'var(--r-field)', background: 'var(--blue-tint)' }}>
+            <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>Your login</span>
+            <span style={{ fontFamily: 'var(--display)', fontSize: 18, fontVariantNumeric: 'tabular-nums' }}>{inviteInfo.phone_number}</span>
+          </div>
+        ) : null}
 
         <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
           <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>Password</span>

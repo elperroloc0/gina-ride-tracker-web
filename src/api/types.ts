@@ -78,6 +78,14 @@ export type SetPasswordResponse = {
   refresh: string;
 };
 
+/** What GET /api/set-password/:token/ (InviteInfoView) returns - lets the
+ * set-password page show whose account it's activating before anything is
+ * typed. phone_number is what the parent will use to sign in afterward. */
+export type InviteInfoResponse = {
+  first_name: string;
+  phone_number: string;
+};
+
 export type CreateChildScheduleRequest = {
   child: number;
   /** 0=Monday..6=Sunday (accounts.models.ChildSchedule.Weekday). */

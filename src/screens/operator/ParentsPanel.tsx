@@ -23,7 +23,7 @@ export function ParentsPanel() {
   useEffect(refetch, []);
 
   async function onDeactivate(parent: ParentDTO) {
-    if (!window.confirm(`Deactivate ${parent.first_name || parent.username}? They won't be able to sign in anymore.`)) return;
+    if (!window.confirm(`Deactivate ${parent.first_name || parent.phone_number}? They won't be able to sign in anymore.`)) return;
     setRowError(null);
     setRowNotice(null);
     try {
@@ -95,8 +95,8 @@ export function ParentsPanel() {
           {parents.map((parent) => (
             <TableRow key={parent.id}>
               <TableCell grow={2}>
-                <div style={{ fontWeight: 600 }}>{parent.first_name || parent.username}</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)' }}>{parent.username}</div>
+                <div style={{ fontWeight: 600 }}>{parent.first_name || parent.phone_number}</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)' }}>{parent.phone_number}</div>
                 {parent.email ? <div style={{ fontSize: 12, color: 'var(--muted)' }}>{parent.email}</div> : null}
               </TableCell>
               <TableCell basis={120}>

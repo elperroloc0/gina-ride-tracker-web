@@ -9,11 +9,12 @@ type Props = {
   onCancel: () => void;
 };
 
-/** Editing phone_number here also updates the parent's login (username)
- * server-side (ParentSerializer.update()) - a parent's username IS their
- * phone number, kept in lockstep, never a separately-editable field. Shown
- * as a static "Login" line instead of an input for that reason, same as
- * GeoFenceForm omits the server-derived traccar_id entirely. */
+/** phone_number (the Phone field below) is a parent's actual login -
+ * matched directly by FlexibleLoginBackend - not the separate `username`
+ * field (a name-derived internal handle, generated once at enrollment and
+ * never shown here, same as GeoFenceForm omits the server-derived
+ * traccar_id entirely). No standalone "Login" line: the Phone field below
+ * already is that value. */
 export function EditParentForm({ parent, onDone, onCancel }: Props) {
   const [firstName, setFirstName] = useState(parent.first_name);
   const [email, setEmail] = useState(parent.email);
@@ -38,8 +39,6 @@ export function EditParentForm({ parent, onDone, onCancel }: Props) {
   return (
     <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24 }}>
       <div style={{ fontFamily: 'var(--display)', fontSize: 20, textTransform: 'uppercase' }}>Edit parent</div>
-
-      <div style={{ fontSize: 12, color: 'var(--muted)' }}>Login: {parent.username}</div>
 
       <Field label="Name">
         <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
