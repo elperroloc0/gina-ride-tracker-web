@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { Badge, Button, Input } from 'gina-ride-tracker-ds';
 import { ApiError, enrollParent, getGeoFences, getRoutes } from '../../api/client';
+import { normalizePhone } from '../../domain/phone';
 import type { GeoFenceDTO, RouteDTO } from '../../api/types';
 
 const WEEKDAYS: { value: number; label: string }[] = [
@@ -10,19 +11,6 @@ const WEEKDAYS: { value: number; label: string }[] = [
   { value: 3, label: 'T' },
   { value: 4, label: 'F' },
 ];
-
-/**
- * Normalizes to E.164 for the backend's PhoneNumberField, which has no
- * default region configured (backend/backend/settings.py) and so requires a
- * country code. A bare 10-digit US number is the only shorthand accepted -
- * this is a single-market Miami gym, not a general phone input.
- */
-function normalizePhone(raw: string): string {
-  const digits = raw.replace(/[^\d+]/g, '');
-  if (digits.startsWith('+')) return digits;
-  if (digits.length === 10) return `+1${digits}`;
-  return digits;
-}
 
 type Props = {
   onDone: () => void;

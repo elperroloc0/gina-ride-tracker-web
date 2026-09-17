@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { clearTokens, getAccess } from './auth/tokens';
 import { decodeAccessToken, isOperator } from './auth/jwt';
 import PhoneShell from './layout/PhoneShell';
+import ForgotPassword from './screens/ForgotPassword';
 import Login from './screens/Login';
 import ParentApp from './screens/ParentApp';
 import SetPassword from './screens/SetPassword';
@@ -48,6 +49,7 @@ export default function App() {
   // Read once on mount: a token already in storage means a previous session.
   const [session, setSession] = useState<Session>(() => readSession());
   const [setPasswordToken, setSetPasswordToken] = useState(() => readSetPasswordToken());
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const isDesktop = useIsDesktopViewport();
 
   function onSignOut() {
@@ -74,15 +76,31 @@ export default function App() {
   }
 
   if (!session) {
-    const onSignedIn = () => setSession(readSession());
+    // Reset showForgotPassword on the way in too - otherwise a parent who
+    // resets their password, later signs out, and comes back would land on
+    // this screen again instead of Login (showForgotPassword outlives
+    // session in state; only session controls whether this branch runs
+    // at all).
+    const onSignedIn = () => {
+      setShowForgotPassword(false);
+      setSession(readSession());
+    };
+
+    // Checked before the desktop/mobile split below (and not wrapped in
+    // PhoneShell, like SetPassword) - one screen serves both entry points
+    // instead of a separate desktop variant.
+    if (showForgotPassword) {
+      return <ForgotPassword onBack={() => setShowForgotPassword(false)} onSignedIn={onSignedIn} />;
+    }
+
     // No JWT yet at this point, so there's no role to branch on - viewport
     // width picks the form instead. Once signed in, the JWT's role claim is
     // authoritative regardless of which login screen was used to get it.
     return isDesktop ? (
-      <LoginDesktop onSignedIn={onSignedIn} />
+      <LoginDesktop onSignedIn={onSignedIn} onForgotPassword={() => setShowForgotPassword(true)} />
     ) : (
       <PhoneShell>
-        <Login onSignedIn={onSignedIn} />
+        <Login onSignedIn={onSignedIn} onForgotPassword={() => setShowForgotPassword(true)} />
       </PhoneShell>
     );
   }

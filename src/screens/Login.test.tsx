@@ -22,7 +22,7 @@ describe('Login', () => {
     const onSignedIn = vi.fn();
     const user = userEvent.setup();
 
-    render(<Login onSignedIn={onSignedIn} />);
+    render(<Login onSignedIn={onSignedIn} onForgotPassword={vi.fn()} />);
     await user.type(screen.getByLabelText('Email or phone'), '+13055550100');
     await user.type(screen.getByLabelText('Password'), 'correct-password');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
@@ -45,7 +45,7 @@ describe('Login', () => {
     const onSignedIn = vi.fn();
     const user = userEvent.setup();
 
-    render(<Login onSignedIn={onSignedIn} />);
+    render(<Login onSignedIn={onSignedIn} onForgotPassword={vi.fn()} />);
     await user.type(screen.getByLabelText('Email or phone'), '+13055550100');
     await user.type(screen.getByLabelText('Password'), 'wrong-password');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
@@ -53,5 +53,15 @@ describe('Login', () => {
     expect(await screen.findByText('Those details do not match our records.')).toBeInTheDocument();
     expect(onSignedIn).not.toHaveBeenCalled();
     expect(getAccess()).toBeNull();
+  });
+
+  it('calls onForgotPassword when that link is clicked', async () => {
+    const onForgotPassword = vi.fn();
+    const user = userEvent.setup();
+
+    render(<Login onSignedIn={vi.fn()} onForgotPassword={onForgotPassword} />);
+    await user.click(screen.getByRole('button', { name: /forgot your password/i }));
+
+    expect(onForgotPassword).toHaveBeenCalledTimes(1);
   });
 });

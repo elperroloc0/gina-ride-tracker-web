@@ -4,6 +4,7 @@ import { ApiError, login } from '../../api/client';
 
 type Props = {
   onSignedIn: () => void;
+  onForgotPassword: () => void;
 };
 
 /**
@@ -17,7 +18,7 @@ type Props = {
  * doc comment is explicit that every button in the system is a 999px pill,
  * and that shipped contract wins over a one-off static-mockup tweak.
  */
-export default function LoginDesktop({ onSignedIn }: Props) {
+export default function LoginDesktop({ onSignedIn, onForgotPassword }: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -121,7 +122,7 @@ export default function LoginDesktop({ onSignedIn }: Props) {
             {busy ? 'Signing in…' : 'Sign in'}
           </Button>
 
-          <Button variant="text" type="button">
+          <Button variant="text" type="button" onClick={onForgotPassword}>
             Forgot your password?
           </Button>
 

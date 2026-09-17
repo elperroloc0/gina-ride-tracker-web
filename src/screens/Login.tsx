@@ -4,10 +4,11 @@ import { ApiError, login } from '../api/client';
 
 type Props = {
   onSignedIn: () => void;
+  onForgotPassword: () => void;
 };
 
 /** Copy and hierarchy come from design/ParentLogin.dc.html. */
-export default function Login({ onSignedIn }: Props) {
+export default function Login({ onSignedIn, onForgotPassword }: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -117,7 +118,7 @@ export default function Login({ onSignedIn }: Props) {
             {busy ? 'Signing in…' : 'Sign in'}
           </Button>
 
-          <Button variant="text" type="button">
+          <Button variant="text" type="button" onClick={onForgotPassword}>
             Forgot your password?
           </Button>
         </form>

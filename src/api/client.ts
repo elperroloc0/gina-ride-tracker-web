@@ -19,6 +19,7 @@ import type {
   SetPasswordResponse,
   UpdateParentRequest,
   VanDTO,
+  VerifyResetCodeResponse,
 } from './types';
 
 /** Raised for any non-2xx response, carrying the status so callers can branch. */
@@ -186,3 +187,25 @@ export const setPassword = (token: string, password: string) =>
  */
 export const getInviteInfo = (token: string) =>
   request<InviteInfoResponse>(`/api/set-password/${encodeURIComponent(token)}/`);
+
+/**
+ * Public - phone number only, no signed-in session or existing account
+ * required. Step 1 of 2: texts a 6-digit code, not a link (see
+ * verifyResetCode). The response is the same generic {detail} whether or
+ * not the number actually matches an account (see ForgotPasswordView on
+ * the backend) - never branch UI copy on its content beyond success/failure.
+ */
+export const forgotPassword = (phone: string) =>
+  request<{ detail: string }>('/api/forgot-password/', { method: 'POST', body: JSON.stringify({ phone_number: phone }) });
+
+/**
+ * Step 2: exchanges the code forgotPassword() just texted for a normal
+ * ParentInvite token - feed the result straight into SetPassword.tsx, same
+ * as a texted invite link's token. A wrong/expired code, or too many wrong
+ * guesses, is a 400 with a human-readable `detail` (ApiError.detail).
+ */
+export const verifyResetCode = (phone: string, code: string) =>
+  request<VerifyResetCodeResponse>('/api/forgot-password/verify/', {
+    method: 'POST',
+    body: JSON.stringify({ phone_number: phone, code }),
+  });
