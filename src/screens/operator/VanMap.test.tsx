@@ -119,6 +119,26 @@ describe('VanMap', () => {
     expect(screen.getByText(/Heading E/)).toBeInTheDocument();
   });
 
+  it('expands a van row in the "Vans" panel to show its status card, and collapses on a second click', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => fetchMock(url)));
+    const positions: Record<number, VanPosition> = {
+      1: { van_id: 1, lat: 25.7, lon: -80.2, course: 90, device_time: new Date().toISOString(), ignition: true, fuel: 64, speed: 34.7 },
+    };
+    render(<VanMap positions={positions} />);
+    const user = userEvent.setup();
+
+    const row = await screen.findByRole('button', { name: /Van A/i });
+    await user.click(row);
+
+    expect(screen.getByText('Running')).toBeInTheDocument();
+    expect(screen.getByText('64%')).toBeInTheDocument();
+    expect(screen.getByText('40 mph')).toBeInTheDocument(); // 34.7 knots
+    expect(screen.getByText('E')).toBeInTheDocument();
+
+    await user.click(row);
+    expect(screen.queryByText('Running')).not.toBeInTheDocument();
+  });
+
   it('opens a popup with the geofence details when its layer is clicked', async () => {
     vi.stubGlobal('fetch', vi.fn(async (url: string) => fetchMock(url)));
     render(<VanMap positions={{}} />);

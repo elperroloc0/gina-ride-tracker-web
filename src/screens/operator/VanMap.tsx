@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Layer, Marker, Source, type MapMouseEvent } from '@vis.gl/react-mapbox';
-import { LivenessDot } from 'gina-ride-tracker-ds';
+import { Icon, LivenessDot } from 'gina-ride-tracker-ds';
 import { getGeoFences, getRoutes, getVans } from '../../api/client';
 import type { GeoFenceDTO, RouteDTO, VanDTO } from '../../api/types';
 import { compassLabel } from '../../domain/compass';
@@ -16,6 +16,7 @@ import { VanSprite } from '../../map/VanSprite';
 import { DEFAULT_VIEW_STATE } from '../../map/viewState';
 import { isStale } from '../../ws/staleness';
 import type { VanPosition } from '../../ws/vanSocket';
+import { VanStatusCard } from './VanStatusCard';
 
 type Props = {
   positions: Record<number, VanPosition>;
@@ -36,6 +37,10 @@ export function VanMap({ positions }: Props) {
   const [routes, setRoutes] = useState<RouteDTO[]>([]);
   const [routeLines, setRouteLines] = useState<Record<number, LngLat[]>>({});
   const [selected, setSelected] = useState<Selected | null>(null);
+  // Which van's row in the floating "Vans" panel is expanded to show its
+  // full status (engine/fuel/speed/heading) - independent of `selected`
+  // above, which drives the map popup, not this panel.
+  const [expandedVanId, setExpandedVanId] = useState<number | null>(null);
   // Starts null (not DEFAULT_VIEW_STATE) so the map waits for the gym's real
   // geofence rather than momentarily flashing a generic Miami-wide view -
   // Mapbox only reads BaseMap's initialViewState once, at mount.
@@ -247,12 +252,27 @@ export function VanMap({ positions }: Props) {
           vans.map((van) => {
             const position = positions[van.id];
             const live = position != null && !isStale(position.device_time, now);
+            const expanded = expandedVanId === van.id;
             return (
-              <LivenessDot
-                key={van.id}
-                state={live ? 'ok' : 'stale'}
-                label={`${van.name} · ${position ? (live ? 'Live' : 'Signal lost') : 'No signal yet'}`}
-              />
+              <div key={van.id}>
+                <button
+                  type="button"
+                  onClick={() => setExpandedVanId(expanded ? null : van.id)}
+                  aria-expanded={expanded}
+                  style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 8, background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}
+                >
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <LivenessDot
+                      state={live ? 'ok' : 'stale'}
+                      label={`${van.name} · ${position ? (live ? 'Live' : 'Signal lost') : 'No signal yet'}`}
+                    />
+                  </span>
+                  <span style={{ display: 'flex', flexShrink: 0, color: 'var(--muted)', transform: expanded ? 'rotate(90deg)' : undefined }}>
+                    <Icon name="chevron" size={16} />
+                  </span>
+                </button>
+                {expanded ? <VanStatusCard position={position} /> : null}
+              </div>
             );
           })
         )}
