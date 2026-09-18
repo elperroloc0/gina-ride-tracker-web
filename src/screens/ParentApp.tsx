@@ -116,7 +116,7 @@ export default function ParentApp({ onSignOut }: { onSignOut: () => void }) {
 /** Idle vs. live/stale, driven by the real WebSocket - see src/ws/useVanSocket.ts. */
 function RideTab({ child }: { child: ChildDTO }) {
   const { status, position } = useVanSocket(child.id);
-  const { nextRide, origin, destination, originFence, destinationFence } = useNextRide(child);
+  const { nextRide, origin, destination, originFence, destinationFence, loading } = useNextRide(child);
 
   if (status === 'live' || status === 'stale') {
     return (
@@ -130,7 +130,17 @@ function RideTab({ child }: { child: ChildDTO }) {
       />
     );
   }
-  return <ParentIdle childName={child.name} nextRide={nextRide} origin={origin} destination={destination} />;
+  return (
+    <ParentIdle
+      childName={child.name}
+      nextRide={nextRide}
+      origin={origin}
+      destination={destination}
+      originFence={originFence}
+      destinationFence={destinationFence}
+      loading={loading}
+    />
+  );
 }
 
 function ScheduleTab({ child }: { child: ChildDTO }) {
