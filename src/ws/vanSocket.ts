@@ -8,6 +8,16 @@ export type VanPosition = {
   /** Course over ground in degrees (0=north), null when the tracker didn't report one. */
   course: number | null;
   device_time: string;
+  /** From Traccar's attributes - null when this specific tracker/fix didn't
+   * report it (not every device wires ignition sensing), not a default. */
+  ignition: boolean | null;
+  /** From Traccar's attributes (fuel or fuelLevel, whichever the device
+   * sends) - unit depends on how the tracker/OBD reports it, not yet
+   * confirmed against real hardware (see tracking/models.py's Position.attributes). */
+  fuel: number | null;
+  /** Traccar's own top-level position field, in knots - not an attribute,
+   * reported the same way course is. */
+  speed: number | null;
 };
 
 type ConnectOptions = {

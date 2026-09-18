@@ -105,7 +105,7 @@ describe('VanMap', () => {
   it('opens a popup with the van name and status when its marker is clicked', async () => {
     vi.stubGlobal('fetch', vi.fn(async (url: string) => fetchMock(url)));
     const positions: Record<number, VanPosition> = {
-      1: { van_id: 1, lat: 25.7, lon: -80.2, course: 90, device_time: new Date().toISOString() },
+      1: { van_id: 1, lat: 25.7, lon: -80.2, course: 90, device_time: new Date().toISOString(), ignition: null, fuel: null, speed: null },
     };
 
     render(<VanMap positions={positions} />);

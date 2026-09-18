@@ -62,7 +62,7 @@ afterEach(() => {
 
 describe('ParentRide', () => {
   it('opens a popup with the van name and status when its marker is clicked', async () => {
-    const position: VanPosition = { van_id: 1, lat: 25.75, lon: -80.25, course: 180, device_time: new Date().toISOString() };
+    const position: VanPosition = { van_id: 1, lat: 25.75, lon: -80.25, course: 180, device_time: new Date().toISOString(), ignition: null, fuel: null, speed: null };
 
     render(<ParentRide status="live" position={position} childName="Mia" routeId={7} originFence={ORIGIN} destinationFence={DESTINATION} />);
     const marker = await screen.findByRole('button', { name: '' });
