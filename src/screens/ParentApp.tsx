@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Icon } from 'gina-ride-tracker-ds';
 import { getChildren } from '../api/client';
 import type { ChildDTO } from '../api/types';
 import { useVanSocket } from '../ws/useVanSocket';
 import { ChildSwitcher } from './ChildSwitcher';
+import ParentAccount from './ParentAccount';
 import ParentIdle from './ParentIdle';
 import ParentRide from './ParentRide';
 import Schedule from './Schedule';
 import { useNextRide } from './useNextRide';
 
-type Tab = 'ride' | 'schedule';
+type Tab = 'ride' | 'schedule' | 'account';
 
 /**
  * Shell around the parent-facing screens: floating logo + child switcher up top,
@@ -76,7 +77,10 @@ export default function ParentApp({ onSignOut }: { onSignOut: () => void }) {
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {selected ? (
+        {tab === 'account' ? (
+          // Doesn't depend on a selected child, unlike the other two tabs.
+          <ParentAccount />
+        ) : selected ? (
           tab === 'ride' ? (
             <RideTab child={selected} />
           ) : (
@@ -101,8 +105,9 @@ export default function ParentApp({ onSignOut }: { onSignOut: () => void }) {
           gap: 44,
         }}
       >
-        <NavTab icon="van" label="Ride" active={tab === 'ride'} onClick={() => setTab('ride')} />
-        <NavTab icon="clock" label="Schedule" active={tab === 'schedule'} onClick={() => setTab('schedule')} />
+        <NavTab icon={<Icon name="van" size={20} />} label="Ride" active={tab === 'ride'} onClick={() => setTab('ride')} />
+        <NavTab icon={<Icon name="clock" size={20} />} label="Schedule" active={tab === 'schedule'} onClick={() => setTab('schedule')} />
+        <NavTab icon={<PersonIcon />} label="Account" active={tab === 'account'} onClick={() => setTab('account')} />
       </div>
     </div>
   );
@@ -133,7 +138,7 @@ function ScheduleTab({ child }: { child: ChildDTO }) {
   return <Schedule child={child} origin={origin} destination={destination} />;
 }
 
-function NavTab({ icon, label, active, onClick }: { icon: 'van' | 'clock'; label: string; active: boolean; onClick: () => void }) {
+function NavTab({ icon, label, active, onClick }: { icon: ReactNode; label: string; active: boolean; onClick: () => void }) {
   const color = active ? '#FFFFFF' : '#77777D';
   return (
     <button
@@ -141,8 +146,20 @@ function NavTab({ icon, label, active, onClick }: { icon: 'van' | 'clock'; label
       onClick={onClick}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, background: 'none', border: 'none', padding: 0, cursor: 'pointer', color }}
     >
-      <Icon name={icon} size={20} />
+      {icon}
       <span style={{ fontSize: 10, fontWeight: active ? 700 : 600 }}>{label}</span>
     </button>
+  );
+}
+
+/** Same "no fitting DS glyph" situation as OperatorConsole's PeopleIcon -
+ * a single person outline reads as "your account" the way the DS's fixed
+ * 16-icon set has no glyph for. */
+function PersonIcon() {
+  return (
+    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M5 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
   );
 }

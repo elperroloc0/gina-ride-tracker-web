@@ -78,6 +78,24 @@ export type SetPasswordResponse = {
   refresh: string;
 };
 
+/** What GET /api/me/ (MeView) returns for whoever is signed in. Narrower
+ * than ParentDTO on purpose - phone_number/first_name/role are read-only
+ * here (see UpdateMeRequest), matching MeSerializer's read_only_fields. */
+export type MeDTO = {
+  first_name: string;
+  email: string;
+  phone_number: string;
+  role: 'PARENT' | 'OPERATOR';
+  notify_channel: 'SMS' | 'EMAIL';
+};
+
+/** PATCH /api/me/ body - only email and notify_channel are writable
+ * self-service; phone_number/first_name/role stay operator-only. */
+export type UpdateMeRequest = Partial<{
+  email: string;
+  notify_channel: 'SMS' | 'EMAIL';
+}>;
+
 /** What POST /api/forgot-password/verify/ (VerifyResetCodeView) returns on
  * a correct code - a normal ParentInvite token, the same shape a texted
  * invite link's token has. Feed it straight into SetPassword.tsx. */

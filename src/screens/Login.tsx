@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Badge, Button, Icon, Input, WaveDivider } from 'gina-ride-tracker-ds';
 import { ApiError, login } from '../api/client';
+import { GYM_PHONE_DISPLAY, GYM_PHONE_E164 } from '../domain/gymContact';
 
 type Props = {
   onSignedIn: () => void;
@@ -143,8 +144,8 @@ export default function Login({ onSignedIn, onForgotPassword }: Props) {
         <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>
           Questions? Call the front desk
           <br />
-          <a href="tel:+13054564150" style={{ fontWeight: 600, color: 'var(--ink)', textDecoration: 'none', fontVariantNumeric: 'tabular-nums' }}>
-            1 (305) 456-4150
+          <a href={`tel:${GYM_PHONE_E164}`} style={{ fontWeight: 600, color: 'var(--ink)', textDecoration: 'none', fontVariantNumeric: 'tabular-nums' }}>
+            {GYM_PHONE_DISPLAY}
           </a>
         </div>
       </main>

@@ -30,7 +30,21 @@ export default function Schedule({ child, origin, destination }: Props) {
   const rows = [...child.schedule].sort((a, b) => a.weekday - b.weekday);
 
   return (
-    <div style={{ minHeight: '100%', flex: 1, display: 'flex', flexDirection: 'column', gap: 16, padding: 16, background: 'var(--bg)' }}>
+    <div
+      style={{
+        minHeight: '100%',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        // Top/bottom clear ParentApp's floating header and nav bar (both
+        // position: absolute, so they take no space in this div's own flow)
+        // - 92 bottom matches the clearance ParentIdle's floating card
+        // already uses for the same nav bar.
+        padding: '76px 16px 92px',
+        background: 'var(--bg)',
+      }}
+    >
       <div style={{ fontFamily: 'var(--display)', fontSize: 24, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
         Schedule
       </div>

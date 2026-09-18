@@ -13,10 +13,12 @@ import type {
   EnrollParentResponse,
   GeoFenceDTO,
   InviteInfoResponse,
+  MeDTO,
   OperatorDTO,
   ParentDTO,
   RouteDTO,
   SetPasswordResponse,
+  UpdateMeRequest,
   UpdateParentRequest,
   VanDTO,
   VerifyResetCodeResponse,
@@ -208,4 +210,20 @@ export const verifyResetCode = (phone: string, code: string) =>
   request<VerifyResetCodeResponse>('/api/forgot-password/verify/', {
     method: 'POST',
     body: JSON.stringify({ phone_number: phone, code }),
+  });
+
+/** The signed-in user's own profile - see MeDTO for why it's narrower than ParentDTO. */
+export const getMe = () => request<MeDTO>('/api/me/');
+export const updateMe = (payload: UpdateMeRequest) =>
+  request<MeDTO>('/api/me/', { method: 'PATCH', body: JSON.stringify(payload) });
+
+/**
+ * Self-service password change for someone who still knows their current
+ * one - distinct from setPassword()'s invite-token flow, for someone who
+ * doesn't. A wrong current password is a 400 with `detail` set.
+ */
+export const changePassword = (currentPassword: string, newPassword: string) =>
+  request<void>('/api/change-password/', {
+    method: 'POST',
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
   });
