@@ -12,7 +12,12 @@ import { useSpringPosition } from '../map/useSpringPosition';
 import { useVanTrail } from '../map/useVanTrail';
 import { VanSprite } from '../map/VanSprite';
 import type { GeoFenceDTO } from '../api/types';
+import type { ViewState } from '../map/viewState';
 import type { VanPosition } from '../ws/vanSocket';
+
+/** How close in the camera starts once centered on the van - same level
+ * VanMap.tsx uses for centering on a single point. */
+const INITIAL_VAN_ZOOM = 13;
 
 type Props = {
   status: 'live' | 'stale';
@@ -43,19 +48,35 @@ export default function ParentRide({ status, position, childName, originFence, d
   // ParentRide unmounts for ParentIdle - "included only during a specific
   // route" the way a planned-route line drawn unconditionally never was.
   const trail = useVanTrail(position);
+  // Captured once, from whatever position exists the first time this
+  // component sees one - never recomputed afterward. BaseMap only reads
+  // initialViewState at mount, so re-deriving this on every tick wouldn't
+  // move the camera anyway; the real reason it's "once" and not "every
+  // tick" is that a live-following camera would fight a parent who pans or
+  // zooms to look around. Before this, the map always opened on
+  // DEFAULT_VIEW_STATE (all of Miami) and the van could easily be off
+  // frame - this is what puts it in view at all when the ride starts.
+  const [initialViewState, setInitialViewState] = useState<ViewState | null>(null);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 5000);
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    if (position && !initialViewState) {
+      setInitialViewState({ longitude: position.lon, latitude: position.lat, zoom: INITIAL_VAN_ZOOM });
+    }
+  }, [position, initialViewState]);
+
   const originPolygon = useMemo(() => (originFence ? geoFenceToPolygon(originFence) : null), [originFence]);
   const destinationPolygon = useMemo(() => (destinationFence ? geoFenceToPolygon(destinationFence) : null), [destinationFence]);
 
   return (
     <div style={{ position: 'relative', minHeight: '100%', flex: 1, overflow: 'hidden', background: '#E9E9E4' }}>
-      {hasMapboxToken ? (
+      {hasMapboxToken && initialViewState ? (
         <BaseMap
+          initialViewState={initialViewState}
           interactiveLayerIds={[
             ...(originPolygon ? ['parent-origin-fill'] : []),
             ...(destinationPolygon ? ['parent-destination-fill'] : []),

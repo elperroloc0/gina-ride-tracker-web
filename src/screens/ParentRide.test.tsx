@@ -19,6 +19,10 @@ function position(lon: number, lat: number): VanPosition {
 // live trail actually rendered, the same way VanMap.test.tsx's mock
 // records layer properties for click simulation.
 let renderedSources: { id: string; data: unknown }[] = [];
+// Recorded the same way as renderedSources above, so the initial-camera-
+// centering test can check what BaseMap was actually mounted with, since
+// jsdom can't run real Mapbox GL to observe the camera itself.
+let lastInitialViewState: { longitude: number; latitude: number; zoom: number } | undefined;
 vi.mock('../map/mapboxToken', () => ({ hasMapboxToken: true, mapboxToken: 'pk.test' }));
 vi.mock('@vis.gl/react-mapbox', () => {
   function Source({ id, data, children }: { id?: string; data?: unknown; children?: React.ReactNode }) {
@@ -42,11 +46,14 @@ vi.mock('@vis.gl/react-mapbox', () => {
     children,
     onClick,
     interactiveLayerIds,
+    initialViewState,
   }: {
     children?: React.ReactNode;
     onClick?: (e: { features: Array<{ layer: { id: string } }> }) => void;
     interactiveLayerIds?: string[];
+    initialViewState?: { longitude: number; latitude: number; zoom: number };
   }) {
+    lastInitialViewState = initialViewState;
     return (
       <div>
         {children}
@@ -64,6 +71,7 @@ vi.mock('@vis.gl/react-mapbox', () => {
 afterEach(() => {
   vi.unstubAllGlobals();
   renderedSources = [];
+  lastInitialViewState = undefined;
 });
 
 describe('ParentRide', () => {
@@ -85,8 +93,27 @@ describe('ParentRide', () => {
     expect(screen.queryByRole('button', { name: '' })).not.toBeInTheDocument();
   });
 
-  it('opens a popup with the origin geofence details when its layer is clicked', async () => {
+  it('does not mount the map at all before a real position exists - no camera to set yet', () => {
     render(<ParentRide status="live" position={null} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />);
+    expect(lastInitialViewState).toBeUndefined();
+  });
+
+  it('centers the initial camera on the van the first time a real position arrives', () => {
+    render(<ParentRide status="live" position={position(-80.25, 25.75)} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />);
+    expect(lastInitialViewState).toEqual({ longitude: -80.25, latitude: 25.75, zoom: 13 });
+  });
+
+  it('keeps the initial camera on the van`s first position - later ticks do not re-center it', () => {
+    const { rerender } = render(
+      <ParentRide status="live" position={position(-80.25, 25.75)} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />,
+    );
+    rerender(<ParentRide status="live" position={position(-80.5, 26.0)} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />);
+
+    expect(lastInitialViewState).toEqual({ longitude: -80.25, latitude: 25.75, zoom: 13 });
+  });
+
+  it('opens a popup with the origin geofence details when its layer is clicked', async () => {
+    render(<ParentRide status="live" position={position(-80.2, 25.7)} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />);
 
     const layerButton = await screen.findByRole('button', { name: 'parent-origin-fill' });
     await userEvent.setup().click(layerButton);
