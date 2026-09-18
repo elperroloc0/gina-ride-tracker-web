@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Map, type MapMouseEvent } from '@vis.gl/react-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { mapboxToken } from './mapboxToken';
-import { DEFAULT_VIEW_STATE, type ViewState } from './viewState';
+import { DEFAULT_VIEW_STATE, MIN_ZOOM, type ViewState } from './viewState';
 
 type Props = {
   /** Markers, geofence layers, etc. drawn on top of the base map. */
@@ -16,6 +16,12 @@ type Props = {
    * caller with async data (e.g. a geofence fetched from the API) should wait
    * for it before rendering BaseMap at all, rather than pass it in late. */
   initialViewState?: ViewState;
+  /** How far out the camera can go - defaults to MIN_ZOOM everywhere (see
+   * its own doc comment) so no caller has to remember to set this
+   * individually. Override only if a specific map genuinely needs a
+   * different range. */
+  minZoom?: number;
+  maxZoom?: number;
 };
 
 /**
@@ -32,12 +38,21 @@ type Props = {
  * Defaults to `DEFAULT_VIEW_STATE` (Miami generally) when a caller doesn't
  * pass its own - see that constant's doc comment.
  */
-export function BaseMap({ children, interactiveLayerIds, onClick, initialViewState = DEFAULT_VIEW_STATE }: Props) {
+export function BaseMap({
+  children,
+  interactiveLayerIds,
+  onClick,
+  initialViewState = DEFAULT_VIEW_STATE,
+  minZoom = MIN_ZOOM,
+  maxZoom,
+}: Props) {
   return (
     <Map
       mapboxAccessToken={mapboxToken}
       mapStyle="mapbox://styles/mapbox/light-v11"
       initialViewState={initialViewState}
+      minZoom={minZoom}
+      maxZoom={maxZoom}
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
       interactiveLayerIds={interactiveLayerIds}
       onClick={onClick}

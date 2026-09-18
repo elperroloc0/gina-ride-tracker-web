@@ -6,6 +6,20 @@ export type ViewState = { longitude: number; latitude: number; zoom: number };
 export const DEFAULT_VIEW_STATE: ViewState = { longitude: -80.1918, latitude: 25.7617, zoom: 11 };
 
 /**
+ * BaseMap's default minZoom. VanSprite is a fixed-pixel DOM marker (50-56px,
+ * a deliberate choice for a navigation puck - see its own doc comment), not
+ * a real-world-scaled shape like a geofence circle. At a low enough zoom
+ * that fixed pixel size represents a huge real-world area - zoomed out far
+ * enough, the "van" would visually cover a chunk of the map far bigger than
+ * an actual van. Rather than change the marker, this caps how far out the
+ * camera can go in the first place. 10 keeps the whole Miami-Dade area
+ * (every plausible route in this single-gym, single-metro app) reachable
+ * while ruling out a state/country-scale view - a starting default, tune
+ * after the real hardware test if routes ever span farther than that.
+ */
+export const MIN_ZOOM = 10;
+
+/**
  * A view centered on and roughly fitting two points - ParentIdle's school
  * and gym geofences, before any ride is active. Not a real Mapbox
  * fitBounds(): BaseMap doesn't expose a map ref for that, and
