@@ -4,12 +4,12 @@ import { Layer, Marker, Source } from '@vis.gl/react-mapbox';
 import { compassLabel } from '../domain/compass';
 import { timeAgo } from '../domain/timeAgo';
 import { BaseMap } from '../map/BaseMap';
-import { getRouteLine, type LngLat } from '../map/directions';
 import { geoFenceToPolygon } from '../map/geofenceCircle';
 import { MapPlaceholder } from '../map/MapPlaceholder';
 import { MapPopup } from '../map/MapPopup';
 import { hasMapboxToken } from '../map/mapboxToken';
 import { useSpringPosition } from '../map/useSpringPosition';
+import { useVanTrail } from '../map/useVanTrail';
 import { VanSprite } from '../map/VanSprite';
 import type { GeoFenceDTO } from '../api/types';
 import type { VanPosition } from '../ws/vanSocket';
@@ -18,7 +18,6 @@ type Props = {
   status: 'live' | 'stale';
   position: VanPosition | null;
   childName: string;
-  routeId: number;
   originFence?: GeoFenceDTO;
   destinationFence?: GeoFenceDTO;
 };
@@ -30,31 +29,25 @@ type Props = {
  * LivenessDot state, and copy.
  *
  * Marker motion (spring-eased per DESIGN-SYSTEM.md) and click-for-details
- * (van/geofence/route) mirror VanMap.tsx's operator-console implementation -
+ * (van/geofence) mirror VanMap.tsx's operator-console implementation -
  * see useSpringPosition/MapPopup for the shared pieces.
  */
-export default function ParentRide({ status, position, childName, routeId, originFence, destinationFence }: Props) {
+export default function ParentRide({ status, position, childName, originFence, destinationFence }: Props) {
   const isLive = status === 'live';
-  const [routeLine, setRouteLine] = useState<LngLat[]>([]);
-  const [selected, setSelected] = useState<'van' | 'origin' | 'destination' | 'route' | null>(null);
+  const [selected, setSelected] = useState<'van' | 'origin' | 'destination' | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  // The actual path driven so far, not a planned route (see useVanTrail's
+  // own doc comment on why this needs no unmount cleanup of its own): this
+  // socket only stays open while the ride is active, so the trail exists
+  // only as long as the ride does, and empties again the moment
+  // ParentRide unmounts for ParentIdle - "included only during a specific
+  // route" the way a planned-route line drawn unconditionally never was.
+  const trail = useVanTrail(position);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 5000);
     return () => clearInterval(id);
   }, []);
-
-  useEffect(() => {
-    if (!originFence || !destinationFence) return;
-    const originLngLat: LngLat = [Number(originFence.longitude), Number(originFence.latitude)];
-    const destinationLngLat: LngLat = [Number(destinationFence.longitude), Number(destinationFence.latitude)];
-    getRouteLine(routeId, originLngLat, destinationLngLat)
-      .then(setRouteLine)
-      .catch(() => {
-        // No drivable path between the two points - the geofences and van
-        // marker still render fine without the connecting line.
-      });
-  }, [routeId, originFence, destinationFence]);
 
   const originPolygon = useMemo(() => (originFence ? geoFenceToPolygon(originFence) : null), [originFence]);
   const destinationPolygon = useMemo(() => (destinationFence ? geoFenceToPolygon(destinationFence) : null), [destinationFence]);
@@ -66,13 +59,11 @@ export default function ParentRide({ status, position, childName, routeId, origi
           interactiveLayerIds={[
             ...(originPolygon ? ['parent-origin-fill'] : []),
             ...(destinationPolygon ? ['parent-destination-fill'] : []),
-            ...(routeLine.length ? ['parent-route-line'] : []),
           ]}
           onClick={(e) => {
             const layerId = e.features?.[0]?.layer?.id;
             if (layerId === 'parent-origin-fill') setSelected('origin');
             else if (layerId === 'parent-destination-fill') setSelected('destination');
-            else if (layerId === 'parent-route-line') setSelected('route');
           }}
         >
           {originPolygon ? (
@@ -87,23 +78,22 @@ export default function ParentRide({ status, position, childName, routeId, origi
               <Layer id="parent-destination-line" type="line" paint={{ 'line-color': '#1A18F0', 'line-width': 2 }} />
             </Source>
           ) : null}
-          {routeLine.length ? (
+          {trail.length >= 2 ? (
             <Source
-              id="parent-route"
+              id="parent-trail"
               type="geojson"
-              data={{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: routeLine } }}
+              data={{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: trail } }}
             >
-              {/* Solid line with a white casing underneath - the same two-layer
-                  trick every real nav app uses for a route line to stay legible
-                  over the basemap's own streets, rather than a dashed line. */}
+              {/* Same white-casing-under-blue-line trick the old static route
+                  line used - only the source of the coordinates changed. */}
               <Layer
-                id="parent-route-casing"
+                id="parent-trail-casing"
                 type="line"
                 layout={{ 'line-join': 'round', 'line-cap': 'round' }}
                 paint={{ 'line-color': '#FFFFFF', 'line-width': 7 }}
               />
               <Layer
-                id="parent-route-line"
+                id="parent-trail-line"
                 type="line"
                 layout={{ 'line-join': 'round', 'line-cap': 'round' }}
                 paint={{ 'line-color': '#1A18F0', 'line-width': 4 }}
@@ -134,19 +124,6 @@ export default function ParentRide({ status, position, childName, routeId, origi
             <MapPopup longitude={Number(destinationFence.longitude)} latitude={Number(destinationFence.latitude)} onClose={() => setSelected(null)}>
               <div style={{ fontWeight: 700, marginBottom: 4 }}>{destinationFence.name}</div>
               <div style={{ color: 'var(--muted)' }}>Gym · {destinationFence.radius}m radius</div>
-            </MapPopup>
-          ) : null}
-
-          {selected === 'route' && originFence && destinationFence ? (
-            <MapPopup
-              longitude={(Number(originFence.longitude) + Number(destinationFence.longitude)) / 2}
-              latitude={(Number(originFence.latitude) + Number(destinationFence.latitude)) / 2}
-              onClose={() => setSelected(null)}
-            >
-              <div style={{ fontWeight: 700, marginBottom: 4 }}>{childName}&rsquo;s route</div>
-              <div style={{ color: 'var(--muted)' }}>
-                {originFence.name} &rarr; {destinationFence.name}
-              </div>
             </MapPopup>
           ) : null}
         </BaseMap>
