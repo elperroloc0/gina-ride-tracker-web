@@ -102,51 +102,57 @@ export function ChildrenRoster() {
       {children.length === 0 ? (
         <p style={{ fontSize: 13, color: 'var(--muted)' }}>No children enrolled yet.</p>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableCell grow={2}>Child</TableCell>
-            <TableCell variant="schedule">Schedule</TableCell>
-          </TableHeader>
-          {children.map((child) => {
-            const nextRide = computeNextRide(child.schedule, now);
-            // computeNextRide's activeDays run Sun..Sat; WeekdayChips wants Mon..Fri, so [1..5].
-            const active = nextRide ? nextRide.activeDays.slice(1, 6) : [false, false, false, false, false];
-            return (
-              <TableRow
-                key={child.id}
-                selected={child.id === selectedId}
-                onClick={() => setSelectedId(child.id)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') setSelectedId(child.id);
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                <TableCell grow={2} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Avatar
-                    initials={initialsOf(child.name)}
-                    size={32}
-                    state={child.id === selectedId ? 'selected' : 'default'}
-                    style={{ flexShrink: 0 }}
-                  />
-                  {/* TableCell's own text-overflow CSS only applies to a plain text node -
-                      putting an Avatar beside the name (via the inline flex style above)
-                      needs the ellipsis moved onto the name span itself. */}
-                  <span style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
-                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {child.parent_name || child.parent_phone_number}
-                    </div>
-                  </span>
-                </TableCell>
-                <TableCell variant="schedule">
-                  <WeekdayChips active={active} time={nextRide?.time} />
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </Table>
+        // flexShrink: 0 - .gds-table is overflow: hidden, so as a flex item it
+        // may shrink below its content. Once a child is selected and the ride
+        // panel appears, this column overflows and the table got squashed
+        // (rows clipped) instead of the outer container scrolling.
+        <div style={{ flexShrink: 0 }}>
+          <Table>
+            <TableHeader>
+              <TableCell grow={2}>Child</TableCell>
+              <TableCell variant="schedule">Schedule</TableCell>
+            </TableHeader>
+            {children.map((child) => {
+              const nextRide = computeNextRide(child.schedule, now);
+              // computeNextRide's activeDays run Sun..Sat; WeekdayChips wants Mon..Fri, so [1..5].
+              const active = nextRide ? nextRide.activeDays.slice(1, 6) : [false, false, false, false, false];
+              return (
+                <TableRow
+                  key={child.id}
+                  selected={child.id === selectedId}
+                  onClick={() => setSelectedId(child.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') setSelectedId(child.id);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <TableCell grow={2} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <Avatar
+                      initials={initialsOf(child.name)}
+                      size={32}
+                      state={child.id === selectedId ? 'selected' : 'default'}
+                      style={{ flexShrink: 0 }}
+                    />
+                    {/* TableCell's own text-overflow CSS only applies to a plain text node -
+                        putting an Avatar beside the name (via the inline flex style above)
+                        needs the ellipsis moved onto the name span itself. */}
+                    <span style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {child.parent_name || child.parent_phone_number}
+                      </div>
+                    </span>
+                  </TableCell>
+                  <TableCell variant="schedule">
+                    <WeekdayChips active={active} time={nextRide?.time} />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </Table>
+        </div>
       )}
 
       {selected ? (
