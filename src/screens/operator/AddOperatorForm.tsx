@@ -7,15 +7,13 @@ type Props = {
   onCancel: () => void;
 };
 
-/** Same shape as AddParentForm - new operators get their password set
- * directly here by the creating operator, rather than a texted invite link
- * (that mechanism, ParentInvite, is parent-specific). */
+/** Same shape as AddParentForm - no password here: the new operator is sent
+ * a set-password link (SMS if a phone is given, otherwise email). */
 export function AddOperatorForm({ onDone, onCancel }: Props) {
   const [firstName, setFirstName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +22,7 @@ export function AddOperatorForm({ onDone, onCancel }: Props) {
     setBusy(true);
     setError(null);
     try {
-      await createOperator({ first_name: firstName, username, email, phone_number: phoneNumber || undefined, password });
+      await createOperator({ first_name: firstName, username, email, phone_number: phoneNumber || undefined });
       onDone();
     } catch (err) {
       setError(err instanceof ApiError ? (err.detail ?? 'Could not create this operator right now.') : 'Could not create this operator right now.');
@@ -51,10 +49,6 @@ export function AddOperatorForm({ onDone, onCancel }: Props) {
 
       <Field label="Phone (optional)">
         <Input type="tel" icon="phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-      </Field>
-
-      <Field label="Password">
-        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       </Field>
 
       {error ? (

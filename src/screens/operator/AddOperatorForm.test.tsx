@@ -22,12 +22,11 @@ describe('AddOperatorForm', () => {
     await user.type(screen.getByLabelText('Name'), 'Jamie Rivera');
     await user.type(screen.getByLabelText('Username'), 'jamie');
     await user.type(screen.getByLabelText('Email'), 'jamie@ginasgym.com');
-    await user.type(screen.getByLabelText('Password'), 'pw12345!');
     await user.click(screen.getByRole('button', { name: /add operator/i }));
 
     await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
     const call = fetchSpy.mock.calls.find(([url]) => (url as string).includes('/api/operators/'));
     const body = JSON.parse((call?.[1]?.body ?? '{}') as string);
-    expect(body).toEqual({ first_name: 'Jamie Rivera', username: 'jamie', email: 'jamie@ginasgym.com', phone_number: undefined, password: 'pw12345!' });
+    expect(body).toEqual({ first_name: 'Jamie Rivera', username: 'jamie', email: 'jamie@ginasgym.com', phone_number: undefined });
   });
 });

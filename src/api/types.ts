@@ -147,7 +147,6 @@ export type CreateOperatorRequest = {
   first_name: string;
   email: string;
   phone_number?: string;
-  password: string;
 };
 
 export type ParentDTO = {
