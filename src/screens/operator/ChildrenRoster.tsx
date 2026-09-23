@@ -207,7 +207,7 @@ function RideProgress({
             cursor: 'pointer',
           }}
         >
-          Edit schedule
+          Edit ride
         </button>
       </div>
       <Timeline

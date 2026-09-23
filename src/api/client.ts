@@ -119,6 +119,8 @@ export const requestWsTicket = () => request<{ ticket: string }>('/api/ws-ticket
 // ChildViewSet.get_queryset()); an operator's GET returns everyone's.
 export const getChildren = () => request<ChildDTO[]>('/api/children/');
 
+export const updateChild = (id: number, payload: { route: number }) =>
+  request<ChildDTO>(`/api/children/${id}/`, { method: 'PATCH', body: JSON.stringify(payload) });
 export const createChildSchedule = (payload: CreateChildScheduleRequest) =>
   request<ChildScheduleDTO>('/api/schedules/', { method: 'POST', body: JSON.stringify(payload) });
 export const updateChildSchedule = (id: number, payload: Partial<CreateChildScheduleRequest>) =>
