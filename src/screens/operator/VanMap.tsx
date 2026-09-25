@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Layer, Marker, Source, type MapMouseEvent } from '@vis.gl/react-mapbox';
 import { Icon, LivenessDot } from 'gina-ride-tracker-ds';
-import { getGeoFences, getRoutes, getVans } from '../../api/client';
-import type { GeoFenceDTO, RouteDTO, VanDTO } from '../../api/types';
+import { getChildren, getChildTrail, getGeoFences, getRoutes, getVans } from '../../api/client';
+import type { GeoFenceDTO, VanDTO } from '../../api/types';
 import { compassLabel } from '../../domain/compass';
 import { timeAgo } from '../../domain/timeAgo';
 import { BaseMap } from '../../map/BaseMap';
-import { getRouteLine, type LngLat } from '../../map/directions';
+import type { LngLat } from '../../map/directions';
 import { geoFenceToPolygon } from '../../map/geofenceCircle';
 import { MapPlaceholder } from '../../map/MapPlaceholder';
 import { MapPopup } from '../../map/MapPopup';
 import { hasMapboxToken } from '../../map/mapboxToken';
-import { useSpringPosition } from '../../map/useSpringPosition';
+import { useSmoothPosition } from '../../map/useSmoothPosition';
+import { useVanTrail } from '../../map/useVanTrail';
 import { VanSprite } from '../../map/VanSprite';
 import { DEFAULT_VIEW_STATE } from '../../map/viewState';
 import { isStale } from '../../ws/staleness';
@@ -22,20 +23,20 @@ type Props = {
   positions: Record<number, VanPosition>;
 };
 
-type Selected = { kind: 'van'; id: number } | { kind: 'geofence'; id: number } | { kind: 'route'; id: number };
+type Selected = { kind: 'van'; id: number } | { kind: 'geofence'; id: number };
 
 /**
  * The Live section: every van's current position, plus a small readable list
  * since a bare map pin can't carry a name or a timestamp. The mockup's fuller
  * live panel (a zone-events feed) needs data this phase doesn't derive (an
  * events change-feed) - deferred. Marker motion and click-for-details are not
- * deferred anymore - see useSpringPosition and MapPopup.
+ * deferred anymore - see useSmoothPosition and MapPopup.
  */
 export function VanMap({ positions }: Props) {
   const [vans, setVans] = useState<VanDTO[]>([]);
   const [geoFences, setGeoFences] = useState<GeoFenceDTO[]>([]);
-  const [routes, setRoutes] = useState<RouteDTO[]>([]);
-  const [routeLines, setRouteLines] = useState<Record<number, LngLat[]>>({});
+  // Where each van's current ride started, so a reload redraws the whole path.
+  const [histories, setHistories] = useState<Record<number, LngLat[]>>({});
   const [selected, setSelected] = useState<Selected | null>(null);
   // Which van's row in the floating "Vans" panel is expanded to show its
   // full status (engine/fuel/speed/heading) - independent of `selected`
@@ -59,7 +60,29 @@ export function VanMap({ positions }: Props) {
         gym ? { longitude: Number(gym.longitude), latitude: Number(gym.latitude), zoom: 13 } : DEFAULT_VIEW_STATE,
       );
     });
-    getRoutes().then(setRoutes);
+  }, []);
+
+  useEffect(() => {
+    Promise.all([getChildren(), getRoutes()])
+      .then(([children, routes]) => {
+        const vanByRoute = new Map(routes.map((r) => [r.id, r.van]));
+        // One child per van is enough - children sharing a van share its path.
+        const childForVan = new Map<number, number>();
+        for (const child of children) {
+          const vanId = vanByRoute.get(child.route);
+          if (child.ride_active && vanId != null && !childForVan.has(vanId)) childForVan.set(vanId, child.id);
+        }
+        for (const [vanId, childId] of childForVan) {
+          getChildTrail(childId)
+            .then((fixes) =>
+              setHistories((prev) => ({ ...prev, [vanId]: fixes.map((f): LngLat => [f.lon, f.lat]) })),
+            )
+            .catch(() => {});
+        }
+      })
+      .catch(() => {
+        // Without history the trail just starts from the van's current position.
+      });
   }, []);
 
   useEffect(() => {
@@ -76,47 +99,23 @@ export function VanMap({ positions }: Props) {
   );
   const geoFenceById = useMemo(() => new Map(geoFences.map((g) => [g.id, g])), [geoFences]);
   const vanById = useMemo(() => new Map(vans.map((v) => [v.id, v])), [vans]);
-  const routeById = useMemo(() => new Map(routes.map((r) => [r.id, r])), [routes]);
-
-  useEffect(() => {
-    for (const route of routes) {
-      if (routeLines[route.id]) continue;
-      const origin = geoFenceById.get(route.origin);
-      const destination = geoFenceById.get(route.destination);
-      if (!origin || !destination) continue;
-
-      const originLngLat: LngLat = [Number(origin.longitude), Number(origin.latitude)];
-      const destinationLngLat: LngLat = [Number(destination.longitude), Number(destination.latitude)];
-      getRouteLine(route.id, originLngLat, destinationLngLat)
-        .then((line) => setRouteLines((prev) => ({ ...prev, [route.id]: line })))
-        .catch(() => {
-          // A route with no drivable path between its points (bad data, or a
-          // Directions API hiccup) just doesn't get a line - the van markers
-          // and geofences still render fine without it.
-        });
-    }
-  }, [routes, geoFenceById, routeLines]);
 
   const geofenceLayerIds = geoFencePolygons.map(({ id }) => `geofence-fill-${id}`);
-  const routeLayerIds = routes.filter((r) => routeLines[r.id]?.length).map((r) => `route-line-${r.id}`);
 
   function onMapClick(e: MapMouseEvent) {
     const feature = e.features?.[0];
     if (!feature) return;
     const geoFenceId = feature.properties?.geoFenceId;
-    const routeId = feature.properties?.routeId;
     if (typeof geoFenceId === 'number') setSelected({ kind: 'geofence', id: geoFenceId });
-    else if (typeof routeId === 'number') setSelected({ kind: 'route', id: routeId });
   }
 
   const selectedGeoFence = selected?.kind === 'geofence' ? geoFenceById.get(selected.id) : undefined;
-  const selectedRoute = selected?.kind === 'route' ? routeById.get(selected.id) : undefined;
   const selectedVanPosition = selected?.kind === 'van' ? positions[selected.id] : undefined;
 
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
       {hasMapboxToken && mapCenter ? (
-        <BaseMap initialViewState={mapCenter} interactiveLayerIds={[...geofenceLayerIds, ...routeLayerIds]} onClick={onMapClick}>
+        <BaseMap initialViewState={mapCenter} interactiveLayerIds={geofenceLayerIds} onClick={onMapClick}>
           {geoFencePolygons.map(({ id, polygon }) => (
             <Source key={id} id={`geofence-${id}`} type="geojson" data={polygon}>
               <Layer
@@ -132,43 +131,11 @@ export function VanMap({ positions }: Props) {
             </Source>
           ))}
 
-          {routes.map((route) => {
-            const line = routeLines[route.id];
-            if (!line || line.length === 0) return null;
-            return (
-              <Source
-                key={route.id}
-                id={`route-${route.id}`}
-                type="geojson"
-                data={{
-                  type: 'Feature',
-                  properties: { routeId: route.id },
-                  geometry: { type: 'LineString', coordinates: line },
-                }}
-              >
-                {/* Solid line with a white casing underneath - the same two-layer
-                    trick every real nav app uses for a route line to stay legible
-                    over the basemap's own streets, rather than a dashed line. */}
-                <Layer
-                  id={`route-casing-${route.id}`}
-                  type="line"
-                  layout={{ 'line-join': 'round', 'line-cap': 'round' }}
-                  paint={{ 'line-color': '#FFFFFF', 'line-width': 7 }}
-                />
-                <Layer
-                  id={`route-line-${route.id}`}
-                  type="line"
-                  layout={{ 'line-join': 'round', 'line-cap': 'round' }}
-                  paint={{ 'line-color': '#1A18F0', 'line-width': 4 }}
-                />
-              </Source>
-            );
-          })}
-
           {Object.values(positions).map((p) => (
-            <AnimatedVanMarker
+            <LiveVan
               key={p.van_id}
               position={p}
+              history={histories[p.van_id]}
               stale={isStale(p.device_time, now)}
               onSelect={() => setSelected({ kind: 'van', id: p.van_id })}
             />
@@ -186,26 +153,6 @@ export function VanMap({ positions }: Props) {
               </div>
             </MapPopup>
           ) : null}
-
-          {selectedRoute
-            ? (() => {
-                const origin = geoFenceById.get(selectedRoute.origin);
-                const destination = geoFenceById.get(selectedRoute.destination);
-                const midpoint =
-                  origin && destination
-                    ? { lon: (Number(origin.longitude) + Number(destination.longitude)) / 2, lat: (Number(origin.latitude) + Number(destination.latitude)) / 2 }
-                    : null;
-                if (!midpoint) return null;
-                return (
-                  <MapPopup longitude={midpoint.lon} latitude={midpoint.lat} onClose={() => setSelected(null)}>
-                    <div style={{ fontWeight: 700, marginBottom: 4 }}>{vanById.get(selectedRoute.van)?.name ?? `Van #${selectedRoute.van}`}</div>
-                    <div style={{ color: 'var(--muted)' }}>
-                      {origin?.name ?? 'School'} &rarr; {destination?.name ?? 'Gym'}
-                    </div>
-                  </MapPopup>
-                );
-              })()
-            : null}
 
           {selectedVanPosition ? (
             <MapPopup
@@ -281,13 +228,50 @@ export function VanMap({ positions }: Props) {
   );
 }
 
-/** One `useSpringPosition` call per marker - hooks can't run inside the
- * `.map()` loop above, so the animated marker is its own component instance. */
-function AnimatedVanMarker({ position, stale, onSelect }: { position: VanPosition; stale: boolean; onSelect: () => void }) {
-  const animated = useSpringPosition({ lat: position.lat, lon: position.lon });
+/** One `useSmoothPosition` per van - hooks can't run inside the `.map()` loop
+ * above, so each van is its own component instance. The marker and its trail
+ * share the smoothed position, so the line always ends exactly under the van
+ * and grows as it moves, instead of jumping per GPS fix. */
+function LiveVan({
+  position,
+  history,
+  stale,
+  onSelect,
+}: {
+  position: VanPosition;
+  history?: LngLat[];
+  stale: boolean;
+  onSelect: () => void;
+}) {
+  const animated = useSmoothPosition({ lat: position.lat, lon: position.lon })!;
+  const trail = useVanTrail(animated, history);
+  const line: LngLat[] = [...trail, [animated.lon, animated.lat]];
+  const moved = line.some((c) => c[0] !== line[0][0] || c[1] !== line[0][1]);
   return (
-    <Marker longitude={animated.lon} latitude={animated.lat} onClick={onSelect}>
-      <VanSprite stale={stale} size={56} course={position.course} />
-    </Marker>
+    <>
+      {moved ? (
+        <Source
+          id={`van-trail-${position.van_id}`}
+          type="geojson"
+          data={{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: line } }}
+        >
+          <Layer
+            id={`van-trail-casing-${position.van_id}`}
+            type="line"
+            layout={{ 'line-join': 'round', 'line-cap': 'round' }}
+            paint={{ 'line-color': '#FFFFFF', 'line-width': 7 }}
+          />
+          <Layer
+            id={`van-trail-line-${position.van_id}`}
+            type="line"
+            layout={{ 'line-join': 'round', 'line-cap': 'round' }}
+            paint={{ 'line-color': '#1A18F0', 'line-width': 4 }}
+          />
+        </Source>
+      ) : null}
+      <Marker longitude={animated.lon} latitude={animated.lat} onClick={onSelect}>
+        <VanSprite stale={stale} size={56} course={position.course} />
+      </Marker>
+    </>
   );
 }

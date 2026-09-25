@@ -8,10 +8,12 @@ import { geoFenceToPolygon } from '../map/geofenceCircle';
 import { MapPlaceholder } from '../map/MapPlaceholder';
 import { MapPopup } from '../map/MapPopup';
 import { hasMapboxToken } from '../map/mapboxToken';
-import { useSpringPosition } from '../map/useSpringPosition';
+import { useSmoothPosition, type LatLon } from '../map/useSmoothPosition';
 import { useVanTrail } from '../map/useVanTrail';
 import { VanSprite } from '../map/VanSprite';
+import { getChildTrail } from '../api/client';
 import type { GeoFenceDTO } from '../api/types';
+import type { LngLat } from '../map/directions';
 import type { ViewState } from '../map/viewState';
 import type { VanPosition } from '../ws/vanSocket';
 
@@ -23,6 +25,8 @@ type Props = {
   status: 'live' | 'stale';
   position: VanPosition | null;
   childName: string;
+  /** Lets a reload redraw the path from where the ride started. */
+  childId?: number;
   originFence?: GeoFenceDTO;
   destinationFence?: GeoFenceDTO;
 };
@@ -33,11 +37,11 @@ type Props = {
  * share the same map/timeline chrome and differ only in VanSprite's stale prop,
  * LivenessDot state, and copy.
  *
- * Marker motion (spring-eased per DESIGN-SYSTEM.md) and click-for-details
+ * Marker motion (constant-speed glide between fixes, see useSmoothPosition) and click-for-details
  * (van/geofence) mirror VanMap.tsx's operator-console implementation -
- * see useSpringPosition/MapPopup for the shared pieces.
+ * see useSmoothPosition/MapPopup for the shared pieces.
  */
-export default function ParentRide({ status, position, childName, originFence, destinationFence }: Props) {
+export default function ParentRide({ status, position, childName, childId, originFence, destinationFence }: Props) {
   const isLive = status === 'live';
   const [selected, setSelected] = useState<'van' | 'origin' | 'destination' | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -47,7 +51,23 @@ export default function ParentRide({ status, position, childName, originFence, d
   // only as long as the ride does, and empties again the moment
   // ParentRide unmounts for ParentIdle - "included only during a specific
   // route" the way a planned-route line drawn unconditionally never was.
-  const trail = useVanTrail(position);
+  // One smoothed position feeds both the marker and the trail, so the line is
+  // always drawn exactly up to the van and grows as it moves (not in jumps
+  // per GPS fix).
+  const animated = useSmoothPosition(position ? { lat: position.lat, lon: position.lon } : null);
+  const [history, setHistory] = useState<LngLat[]>();
+  useEffect(() => {
+    if (childId == null) return;
+    getChildTrail(childId)
+      .then((fixes) => setHistory(fixes.map((f): LngLat => [f.lon, f.lat])))
+      .catch(() => {
+        // No history just means the line starts from here, as before.
+      });
+  }, [childId]);
+  const trail = useVanTrail(animated, history);
+  const trailLine: LngLat[] = animated ? [...trail, [animated.lon, animated.lat]] : trail;
+  // A parked van (or the very first fix) is one point repeated - not a line yet.
+  const hasTrail = trailLine.length >= 2 && trailLine.some((c) => c[0] !== trailLine[0][0] || c[1] !== trailLine[0][1]);
   // Captured once, from whatever position exists the first time this
   // component sees one - never recomputed afterward. BaseMap only reads
   // initialViewState at mount, so re-deriving this on every tick wouldn't
@@ -99,11 +119,16 @@ export default function ParentRide({ status, position, childName, originFence, d
               <Layer id="parent-destination-line" type="line" paint={{ 'line-color': '#1A18F0', 'line-width': 2 }} />
             </Source>
           ) : null}
-          {trail.length >= 2 ? (
+          {hasTrail ? (
             <Source
               id="parent-trail"
               type="geojson"
-              data={{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: trail } }}
+              data={{
+                type: 'Feature',
+                properties: {},
+                // Settled points plus the live last stretch to the marker.
+                geometry: { type: 'LineString', coordinates: trailLine },
+              }}
             >
               {/* Same white-casing-under-blue-line trick the old static route
                   line used - only the source of the coordinates changed. */}
@@ -122,9 +147,10 @@ export default function ParentRide({ status, position, childName, originFence, d
             </Source>
           ) : null}
 
-          {position ? (
-            <AnimatedVanMarker
+          {position && animated ? (
+            <VanMarker
               position={position}
+              animated={animated}
               isLive={isLive}
               childName={childName}
               now={now}
@@ -190,12 +216,12 @@ export default function ParentRide({ status, position, childName, originFence, d
   );
 }
 
-/** Owns the spring so it only seeds from a real position - mounting only once
- * `position` exists avoids animating in from a fake (0,0) fallback. Mirrors
- * VanMap.tsx's AnimatedVanMarker, plus the van's own popup since it needs the
- * same animated coordinates as the anchor. */
-function AnimatedVanMarker({
+/** Renders the van at the smoothed position (owned by ParentRide, because the
+ * trail needs the same coordinates), plus the van's own popup anchored to it.
+ * Mirrors VanMap.tsx's AnimatedVanMarker. */
+function VanMarker({
   position,
+  animated,
   isLive,
   childName,
   now,
@@ -204,6 +230,7 @@ function AnimatedVanMarker({
   onDeselect,
 }: {
   position: VanPosition;
+  animated: LatLon;
   isLive: boolean;
   childName: string;
   now: number;
@@ -211,7 +238,6 @@ function AnimatedVanMarker({
   onSelect: () => void;
   onDeselect: () => void;
 }) {
-  const animated = useSpringPosition({ lat: position.lat, lon: position.lon });
   return (
     <>
       <Marker longitude={animated.lon} latitude={animated.lat} onClick={onSelect}>

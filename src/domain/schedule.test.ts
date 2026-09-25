@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ChildScheduleDTO } from '../api/types';
-import { computeNextRide } from './schedule';
+import { computeNextRide, todaysPickup } from './schedule';
 
 function row(weekday: number, pickup_hour: string): ChildScheduleDTO {
   return { id: weekday, child: 1, weekday, pickup_hour };
@@ -39,5 +39,18 @@ describe('computeNextRide', () => {
     const result = computeNextRide(schedule, now)!;
     expect(result.weekday).toBe('Tuesday');
     expect(result.daysAway).toBe(7);
+  });
+});
+
+describe('todaysPickup', () => {
+  const tuesday = new Date('2026-01-06T09:00:00');
+
+  it("returns today's pickup time", () => {
+    expect(todaysPickup([row(0, '14:00:00'), row(1, '15:30:00')], tuesday)).toBe('15:30:00');
+  });
+
+  it('returns null when today is not scheduled', () => {
+    expect(todaysPickup([row(0, '14:00:00'), row(2, '15:30:00')], tuesday)).toBeNull();
+    expect(todaysPickup([], tuesday)).toBeNull();
   });
 });

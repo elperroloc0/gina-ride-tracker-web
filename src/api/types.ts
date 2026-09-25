@@ -19,6 +19,9 @@ export type ChildDTO = {
   parent_phone_number: string;
   route: number;
   schedule: ChildScheduleDTO[];
+  /** Backend is_ride_active(): the live-map gate, incl. its 6h self-healing cap. */
+  ride_active: boolean;
+  active_ride_start: string | null;
 };
 
 // RouteSerializer exposes origin/destination as bare GeoFence ids, not

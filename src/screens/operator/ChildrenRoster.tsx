@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Avatar, Icon, Table, TableCell, TableHeader, TableRow, Timeline, WeekdayChips } from 'gina-ride-tracker-ds';
-import { getArrivalEvents, getChildren, getGeoFences, getRoutes } from '../../api/client';
-import type { ArrivalEventDTO, ChildDTO, GeoFenceDTO, RouteDTO } from '../../api/types';
-import { computeNextRide } from '../../domain/schedule';
+import { Avatar, Badge, Icon, Table, TableCell, TableHeader, TableRow, Timeline, WeekdayChips } from 'gina-ride-tracker-ds';
+import { getArrivalEvents, getChildren, getGeoFences, getRoutes, getVans } from '../../api/client';
+import type { ArrivalEventDTO, ChildDTO, GeoFenceDTO, RouteDTO, VanDTO } from '../../api/types';
+import { deriveRideState, pickupDate, timelineSteps, type RideState } from '../../domain/rideStatus';
+import { computeNextRide, todaysPickup } from '../../domain/schedule';
 import { initialsOf } from '../../domain/initials';
 import { AddParentForm } from './AddParentForm';
 import { EditChildScheduleForm } from './EditChildScheduleForm';
 import { ParentsPanel } from './ParentsPanel';
+
+const REFRESH_MS = 30_000;
 
 function isSameDay(iso: string, now: Date): boolean {
   const d = new Date(iso);
@@ -25,7 +28,9 @@ export function ChildrenRoster() {
   const [children, setChildren] = useState<ChildDTO[]>([]);
   const [routes, setRoutes] = useState<RouteDTO[]>([]);
   const [geoFences, setGeoFences] = useState<GeoFenceDTO[]>([]);
+  const [vans, setVans] = useState<VanDTO[]>([]);
   const [events, setEvents] = useState<ArrivalEventDTO[]>([]);
+  const [now, setNow] = useState(() => new Date());
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [adding, setAdding] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(false);
@@ -38,10 +43,22 @@ export function ChildrenRoster() {
     refetchChildren();
     getRoutes().then(setRoutes);
     getGeoFences().then(setGeoFences);
+    getVans().then(setVans);
     getArrivalEvents().then(setEvents);
   }, []);
 
-  const now = useMemo(() => new Date(), []);
+  // Ride state changes while the operator watches this screen (the webhook flips
+  // ride_active), so re-poll instead of freezing everything at mount time.
+  useEffect(() => {
+    const id = setInterval(() => {
+      setNow(new Date());
+      refetchChildren();
+      getArrivalEvents().then(setEvents);
+    }, REFRESH_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  const vanById = useMemo(() => new Map(vans.map((v) => [v.id, v])), [vans]);
   const routeById = useMemo(() => new Map(routes.map((r) => [r.id, r])), [routes]);
   const geoFenceById = useMemo(() => new Map(geoFences.map((g) => [g.id, g])), [geoFences]);
   const selected = children.find((c) => c.id === selectedId) ?? null;
@@ -159,6 +176,7 @@ export function ChildrenRoster() {
         <RideProgress
           child={selected}
           route={routeById.get(selected.route)}
+          van={vanById.get(routeById.get(selected.route)?.van ?? -1)}
           geoFenceById={geoFenceById}
           events={events}
           now={now}
@@ -171,9 +189,17 @@ export function ChildrenRoster() {
   );
 }
 
+const STATE_BADGE: Record<RideState, { tone: 'now' | 'scheduled' | 'info'; label: string }> = {
+  active: { tone: 'now', label: 'On ride' },
+  completed: { tone: 'info', label: 'Completed' },
+  scheduled: { tone: 'scheduled', label: 'Scheduled' },
+  none: { tone: 'scheduled', label: 'No ride today' },
+};
+
 function RideProgress({
   child,
   route,
+  van,
   geoFenceById,
   events,
   now,
@@ -181,25 +207,46 @@ function RideProgress({
 }: {
   child: ChildDTO;
   route: RouteDTO | undefined;
+  van: VanDTO | undefined;
   geoFenceById: Map<number, GeoFenceDTO>;
   events: ArrivalEventDTO[];
   now: Date;
   onEditSchedule: () => void;
 }) {
-  if (!route) return null;
-  const origin = geoFenceById.get(route.origin);
-  const destination = geoFenceById.get(route.destination);
+  const origin = route ? geoFenceById.get(route.origin) : undefined;
+  const destination = route ? geoFenceById.get(route.destination) : undefined;
+  const pickup = todaysPickup(child.schedule, now);
 
-  const enteredToday = (geoFenceId: number) =>
-    events.some((e) => e.van === route.van && e.geo_fence === geoFenceId && e.arrival_type === 'in' && isSameDay(e.time, now));
-
-  const enteredOrigin = enteredToday(route.origin);
-  const enteredDestination = enteredToday(route.destination);
+  const state = deriveRideState({
+    rideActive: child.ride_active,
+    todaysPickup: pickup,
+    destinationArrivals: route
+      ? events
+          .filter((e) => e.van === route.van && e.geo_fence === route.destination && e.arrival_type === 'in' && isSameDay(e.time, now))
+          .map((e) => new Date(e.time))
+      : [],
+    now,
+  });
+  const badge = STATE_BADGE[state];
+  const pickupLabel = pickup
+    ? pickupDate(pickup, now).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    : null;
+  // The label is optional: a route and a van plate explain themselves, a bare time doesn't.
+  const detail = (value: string, label?: string) => (
+    <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+      {label ? `${label}: ` : null}
+      <span style={{ color: 'var(--ink)', fontWeight: 700 }}>{value}</span>
+    </div>
+  );
 
   return (
     <div style={{ borderTop: '1px solid var(--line)', paddingTop: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, flexGrow: 1 }}>{child.name}&rsquo;s ride today</div>
+        <div style={{ fontSize: 13, fontWeight: 700 }}>{child.name}</div>
+        <Badge tone={badge.tone} size="sm">
+          {badge.label}
+        </Badge>
+        <div style={{ flexGrow: 1 }} />
         <button
           type="button"
           onClick={onEditSchedule}
@@ -216,17 +263,22 @@ function RideProgress({
           Edit ride
         </button>
       </div>
-      <Timeline
-        orientation="horizontal"
-        steps={[
-          { label: `Picked up at ${origin?.name ?? 'the school'}`, state: enteredOrigin ? 'done' : 'future' },
-          {
-            label: 'On the way to the gym',
-            state: enteredOrigin && !enteredDestination ? 'current' : enteredDestination ? 'done' : 'future',
-          },
-          { label: `Arrives at ${destination?.name ?? 'the gym'}`, state: enteredDestination ? 'done' : 'future' },
-        ]}
-      />
+
+      {route ? (
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 16 }}>
+            {detail(`${origin?.name ?? '…'} \u2192 ${destination?.name ?? '…'}`)}
+            {detail(van?.name ?? '…')}
+            {pickupLabel ? detail(pickupLabel, 'Pickup today') : null}
+          </div>
+          <Timeline
+            orientation="horizontal"
+            steps={timelineSteps(state, origin?.name ?? 'the school', destination?.name ?? 'the gym')}
+          />
+        </>
+      ) : (
+        <p style={{ fontSize: 13, color: 'var(--muted)' }}>No route assigned.</p>
+      )}
     </div>
   );
 }

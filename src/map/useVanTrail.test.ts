@@ -1,57 +1,81 @@
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { MAX_TRAIL_POINTS, useVanTrail } from './useVanTrail';
-import type { VanPosition } from '../ws/vanSocket';
+import { MAX_TRAIL_POINTS, MIN_STEP_METERS, useVanTrail } from './useVanTrail';
+import type { LatLon } from './useSmoothPosition';
 
-function position(lon: number, lat: number): VanPosition {
-  return { van_id: 1, lat, lon, course: null, device_time: new Date().toISOString(), ignition: null, fuel: null, speed: null };
+// ~0.0001 degrees of latitude is ~11 m: just over MIN_STEP_METERS.
+const STEP = 0.0001;
+const at = (i: number): LatLon => ({ lat: 25.7 + i * STEP, lon: -80.2 });
+
+function render(initial: LatLon | null, history?: [number, number][]) {
+  return renderHook(({ p, h }: { p: LatLon | null; h?: [number, number][] | undefined }) => useVanTrail(p, h), { initialProps: { p: initial, h: history } as { p: LatLon | null; h?: [number, number][] } });
 }
 
 describe('useVanTrail', () => {
   it('starts empty and ignores a null position', () => {
-    const { result } = renderHook(({ p }: { p: VanPosition | null }) => useVanTrail(p), { initialProps: { p: null } });
-    expect(result.current).toEqual([]);
+    expect(render(null).result.current).toEqual([]);
   });
 
-  it('appends one point per position update, in order', () => {
-    const { result, rerender } = renderHook(({ p }: { p: VanPosition | null }) => useVanTrail(p), {
-      initialProps: { p: position(-80.2, 25.7) },
-    });
-    rerender({ p: position(-80.1, 25.8) });
-    rerender({ p: position(-80.0, 25.9) });
+  it('seeds with the first position and appends once the van has moved far enough', () => {
+    const { result, rerender } = render(at(0));
+    rerender({ p: at(1), h: undefined });
+    rerender({ p: at(2), h: undefined });
 
     expect(result.current).toEqual([
-      [-80.2, 25.7],
-      [-80.1, 25.8],
-      [-80.0, 25.9],
+      [-80.2, at(0).lat],
+      [-80.2, at(1).lat],
+      [-80.2, at(2).lat],
     ]);
   });
 
+  it('skips movements shorter than MIN_STEP_METERS (per-frame animation ticks, a parked van)', () => {
+    expect(MIN_STEP_METERS).toBeGreaterThan(1);
+    const { result, rerender } = render(at(0));
+    rerender({ p: { lat: at(0).lat + 0.00001, lon: at(0).lon } }); // ~1 m
+    rerender({ p: at(0) });
+
+    expect(result.current).toHaveLength(1);
+  });
+
   it('caps the trail at MAX_TRAIL_POINTS, keeping the most recent points', () => {
-    const { result, rerender } = renderHook(({ p }: { p: VanPosition | null }) => useVanTrail(p), {
-      initialProps: { p: position(0, 0) },
-    });
-    for (let i = 1; i <= MAX_TRAIL_POINTS + 5; i++) {
-      rerender({ p: position(i, i) });
-    }
+    const { result, rerender } = render(at(0));
+    for (let i = 1; i <= MAX_TRAIL_POINTS + 5; i++) rerender({ p: at(i) });
 
     expect(result.current).toHaveLength(MAX_TRAIL_POINTS);
-    // The oldest 6 points (index 0 through 5) should have fallen off the front.
-    expect(result.current[0]).toEqual([6, 6]);
-    expect(result.current[result.current.length - 1]).toEqual([MAX_TRAIL_POINTS + 5, MAX_TRAIL_POINTS + 5]);
+    expect(result.current[0]).toEqual([-80.2, at(6).lat]);
   });
 
   it('discards the trail when the component unmounts (a ride ending swaps ParentRide out)', () => {
-    const { result, rerender, unmount } = renderHook(({ p }: { p: VanPosition | null }) => useVanTrail(p), {
-      initialProps: { p: position(-80.2, 25.7) },
-    });
-    rerender({ p: position(-80.1, 25.8) });
+    const { result, rerender, unmount } = render(at(0));
+    rerender({ p: at(1) });
     expect(result.current).toHaveLength(2);
 
     unmount();
 
-    // A fresh mount (the next ride) starts from empty, not from leftover state.
-    const fresh = renderHook(({ p }: { p: VanPosition | null }) => useVanTrail(p), { initialProps: { p: null } });
-    expect(fresh.result.current).toEqual([]);
+    expect(render(null).result.current).toEqual([]);
+  });
+
+  it('puts server history in front of live points, without duplicating the overlap', () => {
+    const { result, rerender } = render(at(3));
+    rerender({ p: at(4), h: undefined });
+
+    // History (which already contains the live points seen so far) arrives late.
+    const history: [number, number][] = [0, 1, 2, 3, 4].map((i) => [-80.2, at(i).lat]);
+    rerender({ p: at(4), h: history });
+    expect(result.current.map((c) => c[1])).toEqual([0, 1, 2, 3, 4].map((i) => at(i).lat));
+
+    // Later live points continue from its end.
+    rerender({ p: at(5), h: history });
+    expect(result.current.map((c) => c[1])).toEqual([0, 1, 2, 3, 4, 5].map((i) => at(i).lat));
+  });
+
+  it('is unaffected by the history being applied twice (StrictMode double-invokes effects)', () => {
+    const history: [number, number][] = [0, 1, 2].map((i) => [-80.2, at(i).lat]);
+    const { result } = renderHook(({ p, h }: { p: LatLon | null; h?: [number, number][] }) => useVanTrail(p, h), {
+      initialProps: { p: at(2), h: history },
+      reactStrictMode: true,
+    });
+
+    expect(result.current.map((c) => c[1])).toEqual([0, 1, 2].map((i) => at(i).lat));
   });
 });

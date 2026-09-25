@@ -124,6 +124,7 @@ function RideTab({ child }: { child: ChildDTO }) {
         status={status}
         position={position}
         childName={child.name}
+        childId={child.id}
         originFence={originFence ?? undefined}
         destinationFence={destinationFence ?? undefined}
       />

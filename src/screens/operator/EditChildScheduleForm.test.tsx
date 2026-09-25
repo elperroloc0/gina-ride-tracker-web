@@ -15,6 +15,8 @@ const CHILD: ChildDTO = {
     { id: 10, child: 1, weekday: 0, pickup_hour: '15:00:00' },
     { id: 11, child: 1, weekday: 2, pickup_hour: '15:00:00' },
   ],
+  ride_active: false,
+  active_ride_start: null,
 };
 
 afterEach(() => {

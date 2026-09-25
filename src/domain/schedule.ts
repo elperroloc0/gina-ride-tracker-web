@@ -49,3 +49,9 @@ export function computeNextRide(schedule: ChildScheduleDTO[], now: Date): NextRi
     daysAway: best!.daysAway,
   };
 }
+
+/** Today's scheduled pickup ("HH:MM:SS"), or null when the child has no ride today. */
+export function todaysPickup(schedule: ChildScheduleDTO[], now: Date): string | null {
+  const nowWeekday = (now.getDay() + 6) % 7; // JS 0=Sunday -> backend 0=Monday
+  return schedule.find((s) => s.weekday === nowWeekday)?.pickup_hour ?? null;
+}

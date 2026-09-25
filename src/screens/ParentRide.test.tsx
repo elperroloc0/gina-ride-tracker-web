@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -86,7 +86,7 @@ describe('ParentRide', () => {
   });
 
   it('does not animate the marker from a fake (0,0) origin before a real position exists', () => {
-    // No <Marker> (and thus no useSpringPosition seeding) should exist yet -
+    // No <Marker> (and thus no marker seeding) should exist yet -
     // this is the regression case: the hook must only mount once `position`
     // is truthy, never called upfront with a (0,0) fallback target.
     render(<ParentRide status="live" position={null} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />);
@@ -127,21 +127,39 @@ describe('ParentRide', () => {
     expect(renderedSources.some((s) => s.id === 'parent-trail')).toBe(false);
   });
 
-  it('draws the live trail from accumulated positions once there are at least two', () => {
-    const { rerender } = render(
-      <ParentRide status="live" position={position(-80.2, 25.7)} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />,
-    );
-    rerender(
-      <ParentRide status="live" position={position(-80.15, 25.75)} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />,
-    );
+  it('grows the live trail with the smoothed van - the line ends at the marker, not at the raw fix', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    try {
+      const { rerender } = render(
+        <ParentRide status="live" position={position(-80.2, 25.7)} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />,
+      );
+      rerender(
+        <ParentRide status="live" position={position(-80.15, 25.75)} childName="Mia" originFence={ORIGIN} destinationFence={DESTINATION} />,
+      );
+      const coordinates = () => {
+        const source = renderedSources.filter((s) => s.id === 'parent-trail').at(-1);
+        return (source?.data as { geometry: { coordinates: number[][] } } | undefined)?.geometry.coordinates;
+      };
 
-    const trailSource = renderedSources.find((s) => s.id === 'parent-trail');
-    expect(trailSource).toBeDefined();
-    const data = trailSource!.data as { geometry: { coordinates: number[][] } };
-    expect(data.geometry.coordinates).toEqual([
-      [-80.2, 25.7],
-      [-80.15, 25.75],
-    ]);
+      // Mid-glide: the head is somewhere between the two fixes, not at the new one yet.
+      act(() => {
+        vi.advanceTimersByTime(1500);
+      });
+      const mid = coordinates()!;
+      expect(mid[0]).toEqual([-80.2, 25.7]);
+      const midHead = mid[mid.length - 1];
+      expect(midHead[0]).toBeGreaterThan(-80.2);
+      expect(midHead[0]).toBeLessThan(-80.15);
+
+      // Glide finished: the line reaches the latest fix.
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
+      const done = coordinates()!;
+      expect(done[done.length - 1]).toEqual([-80.15, 25.75]);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('has no clickable route layer - clicking the trail is not a route lookup anymore', () => {

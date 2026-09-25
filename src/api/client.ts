@@ -118,6 +118,8 @@ export const requestWsTicket = () => request<{ ticket: string }>('/api/ws-ticket
 // A parent's GET only ever returns their own children (scoped server-side in
 // ChildViewSet.get_queryset()); an operator's GET returns everyone's.
 export const getChildren = () => request<ChildDTO[]>('/api/children/');
+/** Where the child's van has driven since the current ride started (empty when no ride is active). */
+export const getChildTrail = (id: number) => request<{ lat: number; lon: number }[]>(`/api/children/${id}/trail/`);
 
 export const updateChild = (id: number, payload: { route: number }) =>
   request<ChildDTO>(`/api/children/${id}/`, { method: 'PATCH', body: JSON.stringify(payload) });
