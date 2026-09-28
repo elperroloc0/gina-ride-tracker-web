@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Badge, Button } from 'gina-ride-tracker-ds';
 import { ApiError, createChildSchedule, deleteChildSchedule, getGeoFences, getRoutes, updateChild, updateChildSchedule } from '../../api/client';
 import type { ChildDTO, GeoFenceDTO, RouteDTO } from '../../api/types';
+import { useIsDesktopViewport } from '../../layout/useIsDesktopViewport';
 
 const WEEKDAYS: { value: number; label: string }[] = [
   { value: 0, label: 'M' },
@@ -33,6 +34,7 @@ export function EditChildScheduleForm({ child, onDone, onCancel }: Props) {
   const [routeId, setRouteId] = useState(child.route);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isDesktop = useIsDesktopViewport();
 
   useEffect(() => {
     getRoutes().then(setRoutes);
@@ -77,84 +79,93 @@ export function EditChildScheduleForm({ child, onDone, onCancel }: Props) {
     }
   }
 
+  const fieldStyle: React.CSSProperties = {
+    border: '1px solid var(--line)',
+    borderRadius: 'var(--r-field)',
+    padding: isDesktop ? '10px 12px' : '0 16px',
+    height: isDesktop ? undefined : 52,
+    fontSize: isDesktop ? 13 : 15,
+    background: 'var(--surface)',
+  };
+  const chipSize = isDesktop ? 30 : 40;
+
   return (
-    <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24 }}>
-      <div style={{ fontFamily: 'var(--display)', fontSize: 20, textTransform: 'uppercase' }}>Edit {child.name}&rsquo;s ride</div>
+    // See AddOperatorForm's note on this shape.
+    <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: isDesktop ? 24 : 16, height: '100%', boxSizing: 'border-box' }}>
+      <div style={{ fontFamily: 'var(--display)', fontSize: 20, textTransform: 'uppercase', flexShrink: 0 }}>Edit {child.name}&rsquo;s ride</div>
 
-      <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-        <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
-          Route
-        </span>
-        <select
-          value={routeId}
-          onChange={(e) => setRouteId(Number(e.target.value))}
-          required
-          style={{ border: '1px solid var(--line)', borderRadius: 'var(--r-field)', padding: '10px 12px', fontSize: 13, background: 'var(--surface)' }}
-        >
-          {routes.map((route) => (
-            <option key={route.id} value={route.id}>
-              {geoFenceName(route.origin)} → {geoFenceName(route.destination)}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minHeight: 0, overflowY: 'auto' }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
+            Route
+          </span>
+          <select value={routeId} onChange={(e) => setRouteId(Number(e.target.value))} required style={fieldStyle}>
+            {routes.map((route) => (
+              <option key={route.id} value={route.id}>
+                {geoFenceName(route.origin)} → {geoFenceName(route.destination)}
+              </option>
+            ))}
+          </select>
+        </label>
 
-      <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-        <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
-          Pickup days
-        </span>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {WEEKDAYS.map((day) => {
-            const active = weekdays.has(day.value);
-            return (
-              <button
-                key={day.value}
-                type="button"
-                onClick={() => toggleWeekday(day.value)}
-                aria-pressed={active}
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 'var(--r-chip)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  background: active ? 'var(--blue)' : 'var(--fill)',
-                  color: active ? '#FFFFFF' : 'var(--muted)',
-                }}
-              >
-                {day.label}
-              </button>
-            );
-          })}
-        </div>
-      </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
+            Pickup days
+          </span>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {WEEKDAYS.map((day) => {
+              const active = weekdays.has(day.value);
+              return (
+                <button
+                  key={day.value}
+                  type="button"
+                  onClick={() => toggleWeekday(day.value)}
+                  aria-pressed={active}
+                  style={{
+                    width: chipSize,
+                    height: chipSize,
+                    borderRadius: 'var(--r-chip)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: isDesktop ? 12 : 14,
+                    fontWeight: 700,
+                    background: active ? 'var(--blue)' : 'var(--fill)',
+                    color: active ? '#FFFFFF' : 'var(--muted)',
+                  }}
+                >
+                  {day.label}
+                </button>
+              );
+            })}
+          </div>
+        </label>
 
-      <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-        <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
-          Pickup time
-        </span>
-        <input
-          type="time"
-          value={pickupHour}
-          onChange={(e) => setPickupHour(e.target.value)}
-          required
-          style={{ border: '1px solid var(--line)', borderRadius: 'var(--r-field)', padding: '10px 12px', fontSize: 13 }}
-        />
-      </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          <span style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
+            Pickup time
+          </span>
+          <input type="time" value={pickupHour} onChange={(e) => setPickupHour(e.target.value)} required style={fieldStyle} />
+        </label>
+      </div>
 
       {error ? (
-        <div role="alert" style={{ display: 'flex' }}>
+        <div role="alert" style={{ display: 'flex', flexShrink: 0 }}>
           <Badge tone="alert">{error}</Badge>
         </div>
       ) : null}
 
-      <div style={{ display: 'flex', gap: 10 }}>
-        <Button variant="secondary" type="button" onClick={onCancel}>
+      <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+        <Button variant="secondary" size={isDesktop ? 'console' : 'mobile'} type="button" onClick={onCancel} style={{ flex: isDesktop ? undefined : 1 }}>
           Cancel
         </Button>
-        <Button variant="primary" type="submit" icon="check" disabled={busy || weekdays.size === 0}>
+        <Button
+          variant="primary"
+          size={isDesktop ? 'console' : 'mobile'}
+          type="submit"
+          icon="check"
+          disabled={busy || weekdays.size === 0}
+          style={{ flex: isDesktop ? undefined : 1 }}
+        >
           {busy ? 'Saving…' : 'Save'}
         </Button>
       </div>

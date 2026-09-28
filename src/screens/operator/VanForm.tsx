@@ -2,6 +2,7 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { Badge, Button, Input } from 'gina-ride-tracker-ds';
 import { ApiError, createVan, updateVan } from '../../api/client';
 import type { VanDTO } from '../../api/types';
+import { useIsDesktopViewport } from '../../layout/useIsDesktopViewport';
 
 type Props = {
   initial?: VanDTO;
@@ -16,6 +17,9 @@ export function VanForm({ initial, onDone, onCancel }: Props) {
   const [trackerImei, setTrackerImei] = useState(initial?.tracker_imei ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isDesktop = useIsDesktopViewport();
+  const inputVariant = isDesktop ? 'console' : 'mobile';
+  const buttonSize = isDesktop ? 'console' : 'mobile';
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -34,28 +38,31 @@ export function VanForm({ initial, onDone, onCancel }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24 }}>
-      <div style={{ fontFamily: 'var(--display)', fontSize: 20, textTransform: 'uppercase' }}>{initial ? 'Edit van' : 'Add a van'}</div>
+    // See AddOperatorForm's note on this shape.
+    <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: isDesktop ? 24 : 16, height: '100%', boxSizing: 'border-box' }}>
+      <div style={{ fontFamily: 'var(--display)', fontSize: 20, textTransform: 'uppercase', flexShrink: 0 }}>{initial ? 'Edit van' : 'Add a van'}</div>
 
-      <Field label="Plate number">
-        <Input value={name} onChange={(e) => setName(e.target.value)} required />
-      </Field>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minHeight: 0, overflowY: 'auto' }}>
+        <Field label="Plate number">
+          <Input variant={inputVariant} value={name} onChange={(e) => setName(e.target.value)} required />
+        </Field>
 
-      <Field label="Tracker IMEI">
-        <Input value={trackerImei} onChange={(e) => setTrackerImei(e.target.value)} required />
-      </Field>
+        <Field label="Tracker IMEI">
+          <Input variant={inputVariant} value={trackerImei} onChange={(e) => setTrackerImei(e.target.value)} required />
+        </Field>
+      </div>
 
       {error ? (
-        <div role="alert" style={{ display: 'flex' }}>
+        <div role="alert" style={{ display: 'flex', flexShrink: 0 }}>
           <Badge tone="alert">{error}</Badge>
         </div>
       ) : null}
 
-      <div style={{ display: 'flex', gap: 10 }}>
-        <Button variant="secondary" type="button" onClick={onCancel}>
+      <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+        <Button variant="secondary" size={buttonSize} type="button" onClick={onCancel} style={{ flex: isDesktop ? undefined : 1 }}>
           Cancel
         </Button>
-        <Button variant="primary" type="submit" icon={initial ? 'check' : 'plus'} disabled={busy}>
+        <Button variant="primary" size={buttonSize} type="submit" icon={initial ? 'check' : 'plus'} disabled={busy} style={{ flex: isDesktop ? undefined : 1 }}>
           {busy ? 'Saving…' : initial ? 'Save' : 'Add van'}
         </Button>
       </div>

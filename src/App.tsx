@@ -1,17 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { clearTokens, getAccess } from './auth/tokens';
 import { decodeAccessToken, isOperator } from './auth/jwt';
 import PhoneShell from './layout/PhoneShell';
+import { useIsDesktopViewport } from './layout/useIsDesktopViewport';
 import ForgotPassword from './screens/ForgotPassword';
 import Login from './screens/Login';
 import ParentApp from './screens/ParentApp';
 import SetPassword from './screens/SetPassword';
 import LoginDesktop from './screens/operator/LoginDesktop';
 import OperatorConsole from './screens/operator/OperatorConsole';
-
-// Not specified anywhere in DESIGN-SYSTEM.md (it covers the parent/console
-// artboard sizes, not this split) - picked as a reasonable default, tune here.
-const DESKTOP_BREAKPOINT_PX = 900;
 
 type Session = { role: 'PARENT' | 'OPERATOR' } | null;
 
@@ -29,20 +26,6 @@ function readSession(): Session {
 function readSetPasswordToken(): string | null {
   const match = /^\/set-password\/([^/]+)\/?$/.exec(window.location.pathname);
   return match ? decodeURIComponent(match[1]) : null;
-}
-
-function useIsDesktopViewport(): boolean {
-  const query = `(min-width: ${DESKTOP_BREAKPOINT_PX}px)`;
-  const [isDesktop, setIsDesktop] = useState(() => window.matchMedia(query).matches);
-
-  useEffect(() => {
-    const mql = window.matchMedia(query);
-    const handler = () => setIsDesktop(mql.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, [query]);
-
-  return isDesktop;
 }
 
 export default function App() {

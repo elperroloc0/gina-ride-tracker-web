@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Badge, LivenessDot, Table, TableCell, TableHeader, TableRow } from 'gina-ride-tracker-ds';
 import { ApiError, deactivateParent, getParents, resendParentInvite } from '../../api/client';
 import type { ParentDTO } from '../../api/types';
+import { useIsDesktopViewport } from '../../layout/useIsDesktopViewport';
 import { EditParentForm } from './EditParentForm';
 
 /** View/edit/deactivate for parent accounts, plus resending the set-password
@@ -15,6 +16,7 @@ export function ParentsPanel() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
   const [rowNotice, setRowNotice] = useState<string | null>(null);
+  const isDesktop = useIsDesktopViewport();
 
   function refetch() {
     getParents().then(setParents);
@@ -83,7 +85,7 @@ export function ParentsPanel() {
 
       {parents.length === 0 ? (
         <p style={{ fontSize: 13, color: 'var(--muted)' }}>No parents enrolled yet.</p>
-      ) : (
+      ) : isDesktop ? (
         <Table>
           <TableHeader>
             <TableCell grow={2}>Name / login</TableCell>
@@ -133,6 +135,64 @@ export function ParentsPanel() {
             </TableRow>
           ))}
         </Table>
+      ) : (
+        // Five columns is the widest table in the console (see design intent
+        // in ChildrenRoster's mobile branch) - each parent becomes a card
+        // with the same facts stacked: who, registration state, their kids,
+        // account status, then full-width action buttons a thumb can hit.
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {parents.map((parent) => (
+            <div
+              key={parent.id}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                padding: '14px 16px',
+                borderRadius: 'var(--r-row)',
+                border: '1px solid var(--line)',
+                background: 'var(--surface)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{parent.first_name || parent.phone_number}</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{parent.phone_number}</div>
+                  {parent.email ? <div style={{ fontSize: 12, color: 'var(--muted)' }}>{parent.email}</div> : null}
+                </div>
+                <Badge tone={parent.is_active ? 'now' : 'scheduled'}>{parent.is_active ? 'Active' : 'Deactivated'}</Badge>
+              </div>
+              <LivenessDot state={parent.is_registered ? 'ok' : 'stale'} label={parent.is_registered ? 'Registered' : 'Pending'} />
+              <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                {parent.children.map((c) => c.name).join(', ') || '— no children —'}
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                <button type="button" onClick={() => setEditingId(parent.id)} style={{ ...mobileRowButtonStyle, flex: 1 }}>
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onResendInvite(parent)}
+                  disabled={!parent.phone_number}
+                  title={parent.phone_number ? undefined : 'No phone number on file'}
+                  style={{
+                    ...mobileRowButtonStyle,
+                    flex: 1,
+                    opacity: parent.phone_number ? 1 : 0.45,
+                    cursor: parent.phone_number ? 'pointer' : 'not-allowed',
+                  }}
+                >
+                  Resend
+                </button>
+                {parent.is_active ? (
+                  <button type="button" onClick={() => onDeactivate(parent)} style={{ ...mobileRowButtonStyle, flex: 1 }}>
+                    Deactivate
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
@@ -145,6 +205,21 @@ const rowButtonStyle: React.CSSProperties = {
   color: 'var(--muted)',
   fontSize: 12,
   padding: '6px 10px',
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+};
+
+// Same button, sized for a thumb (40px+ tall) instead of a mouse - the mobile
+// card's actions are full-width and stacked in a row rather than the desktop
+// row's compact wrapping cluster.
+const mobileRowButtonStyle: React.CSSProperties = {
+  border: '1px solid var(--line)',
+  borderRadius: 'var(--r-field)',
+  background: 'transparent',
+  color: 'var(--muted)',
+  fontSize: 13,
+  padding: '10px 12px',
+  minHeight: 40,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
 };

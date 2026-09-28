@@ -21,6 +21,11 @@ import { VanStatusCard } from './VanStatusCard';
 
 type Props = {
   positions: Record<number, VanPosition>;
+  /** Whether the console around this map is the desktop rail+floating-panel
+   * shell or the mobile top-bar+bottom-tabs shell - changes where the "Vans"
+   * status panel sits, since on desktop it's offset to clear the left rail
+   * and on mobile there is no rail to clear. @default true */
+  isDesktop?: boolean;
 };
 
 type Selected = { kind: 'van'; id: number } | { kind: 'geofence'; id: number };
@@ -32,7 +37,7 @@ type Selected = { kind: 'van'; id: number } | { kind: 'geofence'; id: number };
  * events change-feed) - deferred. Marker motion and click-for-details are not
  * deferred anymore - see useSmoothPosition and MapPopup.
  */
-export function VanMap({ positions }: Props) {
+export function VanMap({ positions, isDesktop = true }: Props) {
   const [vans, setVans] = useState<VanDTO[]>([]);
   const [geoFences, setGeoFences] = useState<GeoFenceDTO[]>([]);
   // Where each van's current ride started, so a reload redraws the whole path.
@@ -176,19 +181,41 @@ export function VanMap({ positions }: Props) {
       )}
 
       <div
-        style={{
-          position: 'absolute',
-          left: 116,
-          bottom: 20,
-          background: 'var(--surface)',
-          borderRadius: 'var(--r-card)',
-          boxShadow: '0 12px 28px rgba(0,0,0,0.16)',
-          padding: 14,
-          minWidth: 220,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
-        }}
+        style={
+          isDesktop
+            ? {
+                position: 'absolute',
+                left: 116,
+                bottom: 20,
+                background: 'var(--surface)',
+                borderRadius: 'var(--r-card)',
+                boxShadow: '0 12px 28px rgba(0,0,0,0.16)',
+                padding: 14,
+                minWidth: 220,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }
+            : {
+                // No rail to clear on mobile, so this spans the width instead
+                // of floating as a narrow box - and caps its height with its
+                // own scroll, since several vans expanded at once could
+                // otherwise grow tall enough to cover the whole map.
+                position: 'absolute',
+                left: 12,
+                right: 12,
+                bottom: 12,
+                maxHeight: '45vh',
+                overflowY: 'auto',
+                background: 'var(--surface)',
+                borderRadius: 'var(--r-card)',
+                boxShadow: '0 12px 28px rgba(0,0,0,0.16)',
+                padding: 14,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }
+        }
       >
         <div style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)' }}>
           Vans

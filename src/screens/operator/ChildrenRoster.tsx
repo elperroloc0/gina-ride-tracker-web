@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Avatar, Badge, Icon, Table, TableCell, TableHeader, TableRow, Timeline, WeekdayChips } from 'gina-ride-tracker-ds';
 import { getArrivalEvents, getChildren, getGeoFences, getRoutes, getVans } from '../../api/client';
 import type { ArrivalEventDTO, ChildDTO, GeoFenceDTO, RouteDTO, VanDTO } from '../../api/types';
+import { useIsDesktopViewport } from '../../layout/useIsDesktopViewport';
 import { deriveRideState, pickupDate, timelineSteps, type RideState } from '../../domain/rideStatus';
 import { computeNextRide, todaysPickup } from '../../domain/schedule';
 import { initialsOf } from '../../domain/initials';
@@ -34,6 +35,7 @@ export function ChildrenRoster() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [adding, setAdding] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(false);
+  const isDesktop = useIsDesktopViewport();
 
   function refetchChildren() {
     getChildren().then(setChildren);
@@ -88,8 +90,20 @@ export function ChildrenRoster() {
     );
   }
 
+  const addButtonSize = isDesktop ? 32 : 44;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24, height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        padding: isDesktop ? 24 : 16,
+        height: '100%',
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ fontFamily: 'var(--display)', fontSize: 24, letterSpacing: '-0.02em', textTransform: 'uppercase', flexGrow: 1 }}>
           Children
@@ -99,8 +113,8 @@ export function ChildrenRoster() {
           onClick={() => setAdding(true)}
           aria-label="Add a family"
           style={{
-            width: 32,
-            height: 32,
+            width: addButtonSize,
+            height: addButtonSize,
             borderRadius: '999px',
             border: 'none',
             cursor: 'pointer',
@@ -112,13 +126,13 @@ export function ChildrenRoster() {
             flexShrink: 0,
           }}
         >
-          <Icon name="plus" size={16} />
+          <Icon name="plus" size={isDesktop ? 16 : 20} />
         </button>
       </div>
 
       {children.length === 0 ? (
         <p style={{ fontSize: 13, color: 'var(--muted)' }}>No children enrolled yet.</p>
-      ) : (
+      ) : isDesktop ? (
         // flexShrink: 0 - .gds-table is overflow: hidden, so as a flex item it
         // may shrink below its content. Once a child is selected and the ride
         // panel appears, this column overflows and the table got squashed
@@ -170,6 +184,54 @@ export function ChildrenRoster() {
             })}
           </Table>
         </div>
+      ) : (
+        // The console table's row is a fixed 62px flex row that never wraps
+        // (gds-tr / gds-td--schedule's 190px are a hard invariant - see
+        // DESIGN-SYSTEM.md's "Колонки таблицы консоли") - it simply doesn't
+        // fit a 375-430px phone alongside the name column. Below the desktop
+        // breakpoint each child is its own two-line card instead: name/parent
+        // on top, WeekdayChips' own "card" size (built for exactly this) below.
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {children.map((child) => {
+            const nextRide = computeNextRide(child.schedule, now);
+            const active = nextRide ? nextRide.activeDays.slice(1, 6) : [false, false, false, false, false];
+            const selected = child.id === selectedId;
+            return (
+              <div
+                key={child.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedId(child.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') setSelectedId(child.id);
+                }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10,
+                  padding: '14px 16px',
+                  borderRadius: 'var(--r-row)',
+                  border: selected ? '1px solid var(--blue)' : '1px solid var(--line)',
+                  background: selected ? 'var(--blue-row)' : 'var(--surface)',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Avatar initials={initialsOf(child.name)} size={32} state={selected ? 'selected' : 'default'} style={{ flexShrink: 0 }} />
+                  <span style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {child.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {child.parent_name || child.parent_phone_number}
+                    </div>
+                  </span>
+                </div>
+                <WeekdayChips size="card" active={active} time={nextRide?.time} />
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {selected ? (
@@ -181,6 +243,7 @@ export function ChildrenRoster() {
           events={events}
           now={now}
           onEditSchedule={() => setEditingSchedule(true)}
+          isDesktop={isDesktop}
         />
       ) : null}
 
@@ -204,6 +267,7 @@ function RideProgress({
   events,
   now,
   onEditSchedule,
+  isDesktop,
 }: {
   child: ChildDTO;
   route: RouteDTO | undefined;
@@ -212,6 +276,7 @@ function RideProgress({
   events: ArrivalEventDTO[];
   now: Date;
   onEditSchedule: () => void;
+  isDesktop: boolean;
 }) {
   const origin = route ? geoFenceById.get(route.origin) : undefined;
   const destination = route ? geoFenceById.get(route.destination) : undefined;
@@ -241,7 +306,7 @@ function RideProgress({
 
   return (
     <div style={{ borderTop: '1px solid var(--line)', paddingTop: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 14 }}>
         <div style={{ fontSize: 13, fontWeight: 700 }}>{child.name}</div>
         <Badge tone={badge.tone} size="sm">
           {badge.label}
@@ -271,8 +336,11 @@ function RideProgress({
             {detail(van?.name ?? '…')}
             {pickupLabel ? detail(pickupLabel, 'Pickup today') : null}
           </div>
+          {/* Horizontal sits on the wide desktop panel; DESIGN-SYSTEM.md's own
+              mobile timeline is the vertical rail (Timeline's default), which
+              also reads better in a narrow column than 5 cramped steps in a row. */}
           <Timeline
-            orientation="horizontal"
+            orientation={isDesktop ? 'horizontal' : 'vertical'}
             steps={timelineSteps(state, origin?.name ?? 'the school', destination?.name ?? 'the gym')}
           />
         </>

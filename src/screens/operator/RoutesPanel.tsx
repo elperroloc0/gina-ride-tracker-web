@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Badge, Icon } from 'gina-ride-tracker-ds';
 import { deleteGeoFence, deleteRoute, deleteVan, getGeoFences, getRoutes, getVans, ApiError } from '../../api/client';
 import type { GeoFenceDTO, RouteDTO, VanDTO } from '../../api/types';
+import { useIsDesktopViewport } from '../../layout/useIsDesktopViewport';
 import { GeoFenceForm } from './GeoFenceForm';
 import { RouteForm } from './RouteForm';
 import { VanForm } from './VanForm';
@@ -24,6 +25,7 @@ export function RoutesPanel() {
   const [vans, setVans] = useState<VanDTO[]>([]);
   const [editing, setEditing] = useState<Editing | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
+  const isDesktop = useIsDesktopViewport();
 
   function refetch() {
     getRoutes().then(setRoutes);
@@ -89,7 +91,17 @@ export function RoutesPanel() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 24, height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 24,
+        padding: isDesktop ? 24 : 16,
+        height: '100%',
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+      }}
+    >
       <div style={{ fontFamily: 'var(--display)', fontSize: 24, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
         Routes &amp; zones
       </div>
@@ -101,13 +113,13 @@ export function RoutesPanel() {
       ) : null}
 
       <section>
-        <SectionHeader label="Routes" onAdd={() => setEditing({ kind: 'route' })} />
+        <SectionHeader label="Routes" onAdd={() => setEditing({ kind: 'route' })} isDesktop={isDesktop} />
         {routes.length === 0 ? (
           <p style={{ fontSize: 13, color: 'var(--muted)' }}>No routes yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {routes.map((route) => (
-              <Row key={route.id} onEdit={() => setEditing({ kind: 'route', item: route })} onDelete={() => onDeleteRoute(route)}>
+              <Row key={route.id} isDesktop={isDesktop} onEdit={() => setEditing({ kind: 'route', item: route })} onDelete={() => onDeleteRoute(route)}>
                 <div style={{ fontSize: 13, fontWeight: 700 }}>
                   {geoFenceName(route.origin)} &rarr; {geoFenceName(route.destination)}
                 </div>
@@ -119,13 +131,13 @@ export function RoutesPanel() {
       </section>
 
       <section>
-        <SectionHeader label="Geofences" onAdd={() => setEditing({ kind: 'geofence' })} />
+        <SectionHeader label="Geofences" onAdd={() => setEditing({ kind: 'geofence' })} isDesktop={isDesktop} />
         {geoFences.length === 0 ? (
           <p style={{ fontSize: 13, color: 'var(--muted)' }}>No geofences yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {geoFences.map((g) => (
-              <Row key={g.id} onEdit={() => setEditing({ kind: 'geofence', item: g })} onDelete={() => onDeleteGeoFence(g)}>
+              <Row key={g.id} isDesktop={isDesktop} onEdit={() => setEditing({ kind: 'geofence', item: g })} onDelete={() => onDeleteGeoFence(g)}>
                 <div style={{ flexGrow: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{g.name}</div>
                   <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
@@ -140,13 +152,13 @@ export function RoutesPanel() {
       </section>
 
       <section>
-        <SectionHeader label="Vans" onAdd={() => setEditing({ kind: 'van' })} />
+        <SectionHeader label="Vans" onAdd={() => setEditing({ kind: 'van' })} isDesktop={isDesktop} />
         {vans.length === 0 ? (
           <p style={{ fontSize: 13, color: 'var(--muted)' }}>No vans yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {vans.map((van) => (
-              <Row key={van.id} onEdit={() => setEditing({ kind: 'van', item: van })} onDelete={() => onDeleteVan(van)}>
+              <Row key={van.id} isDesktop={isDesktop} onEdit={() => setEditing({ kind: 'van', item: van })} onDelete={() => onDeleteVan(van)}>
                 <div style={{ fontSize: 13, fontWeight: 600 }}>{van.name}</div>
                 <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>IMEI {van.tracker_imei}</div>
               </Row>
@@ -158,7 +170,8 @@ export function RoutesPanel() {
   );
 }
 
-function SectionHeader({ label, onAdd }: { label: string; onAdd: () => void }) {
+function SectionHeader({ label, onAdd, isDesktop }: { label: string; onAdd: () => void; isDesktop: boolean }) {
+  const size = isDesktop ? 26 : 36;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
       <div style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--muted)', flexGrow: 1 }}>
@@ -169,8 +182,8 @@ function SectionHeader({ label, onAdd }: { label: string; onAdd: () => void }) {
         onClick={onAdd}
         aria-label={`Add ${label.toLowerCase()}`}
         style={{
-          width: 26,
-          height: 26,
+          width: size,
+          height: size,
           borderRadius: '999px',
           border: 'none',
           cursor: 'pointer',
@@ -182,45 +195,62 @@ function SectionHeader({ label, onAdd }: { label: string; onAdd: () => void }) {
           flexShrink: 0,
         }}
       >
-        <Icon name="plus" size={16} />
+        <Icon name="plus" size={isDesktop ? 16 : 20} />
       </button>
     </div>
   );
 }
 
-function Row({ children, onEdit, onDelete }: { children: React.ReactNode; onEdit: () => void; onDelete: () => void }) {
+function Row({
+  children,
+  onEdit,
+  onDelete,
+  isDesktop,
+}: {
+  children: React.ReactNode;
+  onEdit: () => void;
+  onDelete: () => void;
+  isDesktop: boolean;
+}) {
+  const style = rowButtonStyle(isDesktop);
   return (
     <div
       style={{
         border: '1px solid var(--line)',
         borderRadius: 'var(--r-row)',
-        padding: '12px 14px',
+        padding: isDesktop ? '12px 14px' : '14px',
         display: 'flex',
         alignItems: 'center',
         gap: 12,
       }}
     >
-      <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 12 }}>{children}</div>
-      <button type="button" onClick={onEdit} aria-label="Edit" style={rowButtonStyle}>
-        <Icon name="pencil" size={16} />
+      <div style={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 12 }}>{children}</div>
+      <button type="button" onClick={onEdit} aria-label="Edit" style={style}>
+        <Icon name="pencil" size={isDesktop ? 16 : 20} />
       </button>
-      <button type="button" onClick={onDelete} aria-label="Delete" style={{ ...rowButtonStyle, fontSize: 16, lineHeight: 1 }}>
+      <button type="button" onClick={onDelete} aria-label="Delete" style={{ ...style, fontSize: isDesktop ? 16 : 18, lineHeight: 1 }}>
         &times;
       </button>
     </div>
   );
 }
 
-const rowButtonStyle: React.CSSProperties = {
-  width: 26,
-  height: 26,
-  borderRadius: '999px',
-  border: '1px solid var(--line)',
-  cursor: 'pointer',
-  background: 'transparent',
-  color: 'var(--muted)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexShrink: 0,
-};
+// A 26px icon button is a fine mouse target but well under the 44px minimum
+// tap target a phone needs - bumped to 40px (still a circle, still compact
+// enough for two of them beside a row's text) below the desktop breakpoint.
+function rowButtonStyle(isDesktop: boolean): React.CSSProperties {
+  const size = isDesktop ? 26 : 40;
+  return {
+    width: size,
+    height: size,
+    borderRadius: '999px',
+    border: '1px solid var(--line)',
+    cursor: 'pointer',
+    background: 'transparent',
+    color: 'var(--muted)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  };
+}

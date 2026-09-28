@@ -3,6 +3,7 @@ import { Badge, Button, Input } from 'gina-ride-tracker-ds';
 import { ApiError, enrollParent, getGeoFences, getRoutes } from '../../api/client';
 import { normalizePhone } from '../../domain/phone';
 import type { GeoFenceDTO, RouteDTO } from '../../api/types';
+import { useIsDesktopViewport } from '../../layout/useIsDesktopViewport';
 
 const WEEKDAYS: { value: number; label: string }[] = [
   { value: 0, label: 'M' },
@@ -37,6 +38,9 @@ export function AddParentForm({ onDone, onCancel }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ childName: string; invited: boolean } | null>(null);
+  const isDesktop = useIsDesktopViewport();
+  const inputVariant = isDesktop ? 'console' : 'mobile';
+  const buttonSize = isDesktop ? 'console' : 'mobile';
 
   useEffect(() => {
     getRoutes().then((rs) => {
@@ -86,7 +90,7 @@ export function AddParentForm({ onDone, onCancel }: Props) {
 
   if (result) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: isDesktop ? 24 : 16 }}>
         <div style={{ fontFamily: 'var(--display)', fontSize: 20, textTransform: 'uppercase' }}>
           {result.childName} is enrolled
         </div>
@@ -95,36 +99,60 @@ export function AddParentForm({ onDone, onCancel }: Props) {
             ? 'A text with a link to set up their account is on its way to the parent.'
             : 'Added to the existing parent account for this phone number - no new text needed.'}
         </p>
-        <Button variant="secondary" onClick={onDone}>
+        <Button variant="secondary" size={buttonSize} onClick={onDone}>
           Back to roster
         </Button>
       </div>
     );
   }
 
+  const selectFieldStyle: React.CSSProperties = {
+    border: '1px solid var(--line)',
+    borderRadius: 'var(--r-field)',
+    padding: isDesktop ? '10px 12px' : '0 16px',
+    height: isDesktop ? undefined : 52,
+    fontSize: isDesktop ? 13 : 15,
+    background: 'var(--surface)',
+  };
+  const chipSize = isDesktop ? 30 : 40;
+
   return (
+    // This is the longest form in the console (six fields plus the weekday
+    // chips) - tall enough on a phone's shorter viewport that a plain
+    // scrolling form left the Cancel/Add family row straddling the fold,
+    // half-clipped by the bottom tab bar instead of either fully visible or
+    // fully scrolled past. Splitting into a fixed header/footer around a
+    // scrollable field list keeps the buttons always fully in view.
     <form
       onSubmit={onSubmit}
-      style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24, height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        padding: isDesktop ? 24 : 16,
+        height: '100%',
+        boxSizing: 'border-box',
+      }}
     >
-      <div style={{ fontFamily: 'var(--display)', fontSize: 24, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
+      <div style={{ fontFamily: 'var(--display)', fontSize: 24, letterSpacing: '-0.02em', textTransform: 'uppercase', flexShrink: 0 }}>
         Add a family
       </div>
 
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minHeight: 0, overflowY: 'auto' }}>
       <Field label="Parent phone">
-        <Input type="tel" icon="phone" value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} required />
+        <Input variant={inputVariant} type="tel" icon="phone" value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} required />
       </Field>
 
       <Field label="Parent name">
-        <Input value={parentName} onChange={(e) => setParentName(e.target.value)} />
+        <Input variant={inputVariant} value={parentName} onChange={(e) => setParentName(e.target.value)} />
       </Field>
 
       <Field label="Email">
-        <Input type="email" icon="mail" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input variant={inputVariant} type="email" icon="mail" value={email} onChange={(e) => setEmail(e.target.value)} />
       </Field>
 
       <Field label="Child name">
-        <Input value={childName} onChange={(e) => setChildName(e.target.value)} required />
+        <Input variant={inputVariant} value={childName} onChange={(e) => setChildName(e.target.value)} required />
       </Field>
 
       <Field label="Route">
@@ -133,7 +161,7 @@ export function AddParentForm({ onDone, onCancel }: Props) {
           value={routeId ?? ''}
           onChange={(e) => setRouteId(Number(e.target.value))}
           required
-          style={{ border: '1px solid var(--line)', borderRadius: 'var(--r-field)', padding: '10px 12px', fontSize: 13, background: 'var(--surface)' }}
+          style={selectFieldStyle}
         >
           {routes.map((route) => (
             <option key={route.id} value={route.id}>
@@ -154,12 +182,12 @@ export function AddParentForm({ onDone, onCancel }: Props) {
                 onClick={() => toggleWeekday(day.value)}
                 aria-pressed={active}
                 style={{
-                  width: 30,
-                  height: 30,
+                  width: chipSize,
+                  height: chipSize,
                   borderRadius: 'var(--r-chip)',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: 12,
+                  fontSize: isDesktop ? 12 : 14,
                   fontWeight: 700,
                   background: active ? 'var(--blue)' : 'var(--fill)',
                   color: active ? '#FFFFFF' : 'var(--muted)',
@@ -173,26 +201,28 @@ export function AddParentForm({ onDone, onCancel }: Props) {
       </Field>
 
       <Field label="Pickup time">
-        <input
-          type="time"
-          value={pickupHour}
-          onChange={(e) => setPickupHour(e.target.value)}
-          required
-          style={{ border: '1px solid var(--line)', borderRadius: 'var(--r-field)', padding: '10px 12px', fontSize: 13 }}
-        />
+        <input type="time" value={pickupHour} onChange={(e) => setPickupHour(e.target.value)} required style={selectFieldStyle} />
       </Field>
+      </div>
 
       {error ? (
-        <div role="alert" style={{ display: 'flex' }}>
+        <div role="alert" style={{ display: 'flex', flexShrink: 0 }}>
           <Badge tone="alert">{error}</Badge>
         </div>
       ) : null}
 
-      <div style={{ display: 'flex', gap: 10, marginTop: 'auto' }}>
-        <Button variant="secondary" type="button" onClick={onCancel}>
+      <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+        <Button variant="secondary" size={buttonSize} type="button" onClick={onCancel} style={{ flex: isDesktop ? undefined : 1 }}>
           Cancel
         </Button>
-        <Button variant="primary" type="submit" icon="plus" disabled={busy || weekdays.size === 0 || routeId == null}>
+        <Button
+          variant="primary"
+          size={buttonSize}
+          type="submit"
+          icon="plus"
+          disabled={busy || weekdays.size === 0 || routeId == null}
+          style={{ flex: isDesktop ? undefined : 1 }}
+        >
           {busy ? 'Adding…' : 'Add family'}
         </Button>
       </div>

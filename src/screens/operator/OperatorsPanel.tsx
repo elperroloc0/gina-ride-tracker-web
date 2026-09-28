@@ -4,6 +4,7 @@ import { ApiError, deactivateOperator, getOperators } from '../../api/client';
 import type { OperatorDTO } from '../../api/types';
 import { decodeAccessToken } from '../../auth/jwt';
 import { getAccess } from '../../auth/tokens';
+import { useIsDesktopViewport } from '../../layout/useIsDesktopViewport';
 import { AddOperatorForm } from './AddOperatorForm';
 
 /** Create/deactivate for OTHER operator accounts - parent accounts still go
@@ -15,6 +16,7 @@ export function OperatorsPanel() {
   const [adding, setAdding] = useState(false);
   const [rowError, setRowError] = useState<string | null>(null);
   const selfId = decodeAccessToken(getAccess() ?? '')?.user_id;
+  const isDesktop = useIsDesktopViewport();
 
   function refetch() {
     getOperators().then(setOperators);
@@ -46,7 +48,17 @@ export function OperatorsPanel() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24, height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        padding: isDesktop ? 24 : 16,
+        height: '100%',
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ fontFamily: 'var(--display)', fontSize: 24, letterSpacing: '-0.02em', textTransform: 'uppercase', flexGrow: 1 }}>
           Operators
@@ -56,8 +68,8 @@ export function OperatorsPanel() {
           onClick={() => setAdding(true)}
           aria-label="Add an operator"
           style={{
-            width: 32,
-            height: 32,
+            width: isDesktop ? 32 : 44,
+            height: isDesktop ? 32 : 44,
             borderRadius: '999px',
             border: 'none',
             cursor: 'pointer',
@@ -69,7 +81,7 @@ export function OperatorsPanel() {
             flexShrink: 0,
           }}
         >
-          <Icon name="plus" size={16} />
+          <Icon name="plus" size={isDesktop ? 16 : 20} />
         </button>
       </div>
 
@@ -81,7 +93,7 @@ export function OperatorsPanel() {
 
       {operators.length === 0 ? (
         <p style={{ fontSize: 13, color: 'var(--muted)' }}>No other operators yet.</p>
-      ) : (
+      ) : isDesktop ? (
         <Table>
           <TableHeader>
             <TableCell grow={2}>Name</TableCell>
@@ -121,6 +133,53 @@ export function OperatorsPanel() {
             </TableRow>
           ))}
         </Table>
+      ) : (
+        // Same 4-column data as a stacked card: name+username, then a row
+        // pairing the status badge with the one action, so nothing needs a
+        // horizontal scroll to reach it.
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {operators.map((operator) => (
+            <div
+              key={operator.id}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                padding: '14px 16px',
+                borderRadius: 'var(--r-row)',
+                border: '1px solid var(--line)',
+                background: 'var(--surface)',
+              }}
+            >
+              <div style={{ fontSize: 14, fontWeight: 700 }}>{operator.first_name || operator.username}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted)' }}>{operator.username}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {operator.email}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 4 }}>
+                <Badge tone={operator.is_active ? 'now' : 'scheduled'}>{operator.is_active ? 'Active' : 'Deactivated'}</Badge>
+                {operator.is_active && operator.id !== selfId ? (
+                  <button
+                    type="button"
+                    onClick={() => onDeactivate(operator)}
+                    style={{
+                      border: '1px solid var(--line)',
+                      borderRadius: 'var(--r-field)',
+                      background: 'transparent',
+                      color: 'var(--muted)',
+                      fontSize: 13,
+                      padding: '10px 16px',
+                      minHeight: 40,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Deactivate
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
