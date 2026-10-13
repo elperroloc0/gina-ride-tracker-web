@@ -75,7 +75,7 @@ export default function ForgotPassword({ onBack, onSignedIn }: Props) {
   }
 
   if (stage === 'reset' && token) {
-    return <SetPassword token={token} onSignedIn={onSignedIn} />;
+    return <SetPassword token={token} onSignedIn={onSignedIn} onGoToSignIn={onBack} />;
   }
 
   return (

@@ -7,9 +7,25 @@ import { saveTokens } from '../auth/tokens';
 type Props = {
   token: string;
   onSignedIn: () => void;
+  /** Leaves this page for the normal sign-in screen - the way out of a dead
+   * link, most often one a parent already used to set their password. */
+  onGoToSignIn: () => void;
 };
 
-const LINK_DEAD_MESSAGE = 'That link has expired or already been used - ask the gym to send a new one.';
+const LINK_DEAD_MESSAGE =
+  'This link has expired or was already used. If you already set your password, sign in with your phone number. Otherwise, ask the gym to send a new link.';
+const NETWORK_MESSAGE = 'Could not reach the gym right now. Try again in a moment.';
+
+/** A 400 from POST /api/set-password/ is one of two different things: the
+ * password failed Django's validators (SetPasswordSerializer - fixable right
+ * here, so say what's wrong) or the token is dead ({"detail": ...} from
+ * _get_valid_invite - nothing to fix on this page). */
+function submitErrorMessage(err: unknown): { message: string; linkDead: boolean } {
+  if (!(err instanceof ApiError) || err.status !== 400) return { message: NETWORK_MESSAGE, linkDead: false };
+  const passwordErrors = err.fieldErrors?.password;
+  if (passwordErrors?.length) return { message: passwordErrors.join(' '), linkDead: false };
+  return { message: LINK_DEAD_MESSAGE, linkDead: true };
+}
 
 /**
  * Where a ParentInvite text link lands (App.tsx routes /set-password/:token
@@ -19,7 +35,7 @@ const LINK_DEAD_MESSAGE = 'That link has expired or already been used - ask the 
  * real text message should just fill the real viewport, like any ordinary
  * web page.
  */
-export default function SetPassword({ token, onSignedIn }: Props) {
+export default function SetPassword({ token, onSignedIn, onGoToSignIn }: Props) {
   const [password, setPasswordValue] = useState('');
   const [confirm, setConfirm] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +57,7 @@ export default function SetPassword({ token, onSignedIn }: Props) {
       },
       (err) => {
         if (cancelled) return;
-        setInviteError(err instanceof ApiError && err.status === 400 ? LINK_DEAD_MESSAGE : 'Could not reach the gym right now. Try again in a moment.');
+        setInviteError(err instanceof ApiError && err.status === 400 ? LINK_DEAD_MESSAGE : NETWORK_MESSAGE);
       },
     );
     return () => {
@@ -62,7 +78,12 @@ export default function SetPassword({ token, onSignedIn }: Props) {
       saveTokens(tokens);
       onSignedIn();
     } catch (err) {
-      setError(err instanceof ApiError && err.status === 400 ? LINK_DEAD_MESSAGE : 'Could not reach the gym right now. Try again in a moment.');
+      const { message, linkDead } = submitErrorMessage(err);
+      // The token died while the form was open (used in another tab, or
+      // expired) - same dead-end screen as on mount, not an inline error
+      // under a form that can never succeed.
+      if (linkDead) setInviteError(message);
+      else setError(message);
     } finally {
       setBusy(false);
     }
@@ -75,6 +96,9 @@ export default function SetPassword({ token, onSignedIn }: Props) {
           <Icon name="logo" size={24} />
           <div style={{ fontFamily: 'var(--display)', fontSize: 22, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>Link no longer works</div>
           <Badge tone="alert">{inviteError}</Badge>
+          <Button variant="primary" size="mobile" type="button" onClick={onGoToSignIn}>
+            Go to sign in
+          </Button>
         </div>
       </div>
     );

@@ -32,11 +32,15 @@ export class ApiError extends Error {
   /** The backend's {"detail": "..."} body, if it sent one (e.g. GeoFenceViewSet's
    * Traccar-provisioning and ProtectedError messages) - undefined otherwise. */
   detail?: string;
+  /** DRF's per-field validation errors ({"password": ["This password is too
+   * short..."]}) when the 400 is about the input, not the request as a whole. */
+  fieldErrors?: Record<string, string[]>;
 
-  constructor(status: number, message: string, detail?: string) {
+  constructor(status: number, message: string, detail?: string, fieldErrors?: Record<string, string[]>) {
     super(message);
     this.status = status;
     this.detail = detail;
+    this.fieldErrors = fieldErrors;
   }
 }
 
@@ -88,11 +92,21 @@ async function request<T>(path: string, init: RequestInit = {}, isRetry = false)
   }
 
   if (!res.ok) {
-    const detail = await res.json().then(
-      (body: { detail?: string }) => body.detail,
-      () => undefined,
+    const body = await res.json().then(
+      (b: unknown) => (b && typeof b === 'object' ? (b as Record<string, unknown>) : {}),
+      () => ({}) as Record<string, unknown>,
     );
-    throw new ApiError(res.status, `${init.method ?? 'GET'} ${path} → ${res.status}`, detail);
+    const detail = typeof body.detail === 'string' ? body.detail : undefined;
+    const fieldErrors: Record<string, string[]> = {};
+    for (const [key, value] of Object.entries(body)) {
+      if (Array.isArray(value) && value.every((v) => typeof v === 'string')) fieldErrors[key] = value;
+    }
+    throw new ApiError(
+      res.status,
+      `${init.method ?? 'GET'} ${path} → ${res.status}`,
+      detail,
+      Object.keys(fieldErrors).length ? fieldErrors : undefined,
+    );
   }
 
   return res.status === 204 ? (undefined as T) : ((await res.json()) as T);

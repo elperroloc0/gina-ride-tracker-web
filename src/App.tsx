@@ -41,21 +41,17 @@ export default function App() {
   }
 
   if (setPasswordToken) {
-    return (
-      <SetPassword
-        token={setPasswordToken}
-        onSignedIn={() => {
-          // Drop the token from the URL (so a refresh or back button can't
-          // re-render this screen against an invite that's now used up) and
-          // clear the state driving this branch - otherwise it's stuck
-          // showing SetPassword forever, since `if (setPasswordToken)` above
-          // is checked before `session` on every render regardless of it.
-          window.history.replaceState(null, '', '/');
-          setSetPasswordToken(null);
-          setSession(readSession());
-        }}
-      />
-    );
+    // Drop the token from the URL (so a refresh or back button can't
+    // re-render this screen against an invite that's now used up) and
+    // clear the state driving this branch - otherwise it's stuck showing
+    // SetPassword forever, since `if (setPasswordToken)` is checked before
+    // `session` on every render regardless of it.
+    const leaveSetPassword = () => {
+      window.history.replaceState(null, '', '/');
+      setSetPasswordToken(null);
+      setSession(readSession());
+    };
+    return <SetPassword token={setPasswordToken} onSignedIn={leaveSetPassword} onGoToSignIn={leaveSetPassword} />;
   }
 
   if (!session) {
